@@ -53,9 +53,9 @@ graph TB
     UC -->|Manages Updates| Servers
     RC -->|Manages Restarts| Servers
     
-    style Repo fill:#e1f5ff
-    style FluxCD fill:#ffe1e1
-    style NS fill:#e1ffe1
+    style Repo fill:#1a4d6d
+    style FluxCD fill:#6d1a1a
+    style NS fill:#1a6d1a
 ```
 
 ## How It Works
@@ -192,19 +192,6 @@ Where:
 - **Folders**: Use `kebab-case` - each folder defines a service
 - **Files**: Follow hierarchical structure with number ordering when needed
 - **Services**: Each service gets its own directory under the cluster's namespace directory
-
-### Environment Variables
-
-This repository doesn't use environment variables directly. Configuration is managed through Helm values in `helm-values.yaml` files for each service.
-
-Common Helm values include:
-
-| Variable | Description | Example | Required |
-| -------- | ----------- | ------- | -------- |
-| `config.podSelector` | Label selector for target pods | `update=udl` | Yes |
-| `config.namespace` | Target namespace for operations | `udl` | Yes |
-| `namespace.create` | Whether to create the namespace | `false` | No |
-| `interval` | Reconciliation interval for Flux | `10m` | No |
 
 ## Development
 

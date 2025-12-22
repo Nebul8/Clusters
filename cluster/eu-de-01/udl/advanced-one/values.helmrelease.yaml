@@ -11,19 +11,11 @@ spec:
   interval: 10m
   targetNamespace: udl
   values:
-    replicaCount: 1
-
     workload:
       kind: Deployment # Deployment or StatefulSet
       nameOverride: "advanced-one"
       deploymentStrategy:
         type: Recreate
-
-    statefulSet:
-      serviceName: ""
-      podManagementPolicy: OrderedReady
-      updateStrategy: {}
-      volumeClaimTemplates: []
 
     app:
       name: advanced-one
@@ -43,61 +35,6 @@ spec:
       args: []
       stdin: true
       tty: true
-      livenessProbe: {}
-      readinessProbe: {}
-      startupProbe: {}
-      resources: {}
-      securityContext: {}
-      extraVolumeMounts: []
-      lifecycle: {}
-
-    merger:
-      enabled: true
-      image:
-        repository: alpine
-        tag: latest
-        pullPolicy: IfNotPresent
-      resources: {}
-      securityContext: {}
-      extraEnv: []
-      extraVolumeMounts: []
-      watcher:
-        enabled: true
-        image:
-          repository: alpine
-          tag: latest
-          pullPolicy: IfNotPresent
-        installInotifyTools: true
-        events:
-          - close_write
-          - create
-          - delete
-          - moved_to
-          - moved_from
-          - delete_self
-          - move_self
-        debounceSeconds: 2
-        watchPaths: []
-        command: []
-        args: []
-        env: []
-        resources: {}
-        securityContext: {}
-        extraVolumeMounts: []
-        watchBase: true
-
-    initContainers:
-      pre: []
-      post: []
-
-    permissionsInit:
-      enabled: true
-      image: busybox
-      imagePullPolicy: IfNotPresent
-      user: 1000
-      group: 1000
-      chmod: "775"
-      path: ""
 
     paths:
       hostSource: /mnt/tf2
@@ -115,7 +52,6 @@ spec:
           - /mnt/serverfiles/serverfiles
           - /mnt/serverfiles
 
-    # Writable passthrough directories that map directly to the base host path.
     writablePaths:
       - tf/logs
 
@@ -138,12 +74,3 @@ spec:
       clusterIP: ""
       externalTrafficPolicy: ""
       annotations: {}
-
-    podAnnotations: {}
-    podLabels: {}
-    podSecurityContext: {}
-    nodeSelector: {}
-    tolerations: []
-    affinity: {}
-    priorityClassName: ""
-    extraVolumes: []

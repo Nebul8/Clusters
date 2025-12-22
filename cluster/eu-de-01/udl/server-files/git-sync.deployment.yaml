@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-sync-serverfiles
+  namespace: udl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: git-sync-serverfiles
+  template:
+    metadata:
+      labels:
+        app: git-sync-serverfiles
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+        - name: git-sync
+          image: registry.k8s.io/git-sync/git-sync:v4.2.4
+          args:
+            - --repo=https://github.com/UDL-TF/ServerFiles
+            - --root=/mnt
+            - --dest=serverfiles
+            - --period=60s
+            - --max-failures=0
+          volumeMounts:
+            - name: serverfiles
+              mountPath: /mnt
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+      volumes:
+        - name: serverfiles
+          hostPath:
+            path: /mnt/serverfiles
+            type: DirectoryOrCreate

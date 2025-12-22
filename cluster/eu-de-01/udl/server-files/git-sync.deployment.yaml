@@ -26,6 +26,7 @@ spec:
             - --dest=serverfiles
             - --period=60s
             - --max-failures=0
+            - --link=serverfiles-root
           volumeMounts:
             - name: serverfiles
               mountPath: /mnt

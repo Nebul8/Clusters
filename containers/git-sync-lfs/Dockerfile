@@ -10,5 +10,10 @@ RUN apk add --no-cache \
     openssh-client \
     tzdata
 
+# Verify Git + Git LFS are available and set up global hooks
+RUN git --version \
+    && git lfs version \
+    && git lfs install --system
+
 COPY --from=git-sync /git-sync /usr/local/bin/git-sync
 ENTRYPOINT ["/usr/local/bin/git-sync"]

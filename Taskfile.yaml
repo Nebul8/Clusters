@@ -52,47 +52,7 @@ tasks:
     desc: "Create/refresh .secret.yaml files from .sops.yaml files"
     deps: [prereqs]
     cmds:
-      - |
-        bash -c '
-          set -euo pipefail
-          TARGET="{{.FILE}}"
-
-          if [ -n "$TARGET" ]; then
-            case "$TARGET" in
-              *.sops.yaml) ;;
-              *.secret.yaml) TARGET="${TARGET%.secret.yaml}.sops.yaml" ;;
-              *.sealed.yaml) TARGET="${TARGET%.sealed.yaml}.sops.yaml" ;;
-              *.yaml) TARGET="${TARGET%.yaml}.sops.yaml" ;;
-              *) TARGET="${TARGET}.sops.yaml" ;;
-            esac
-          fi
-
-          files=()
-          if [ -n "$TARGET" ]; then
-            if [ ! -f "$TARGET" ]; then
-              echo "File $TARGET not found" >&2
-              exit 1
-            fi
-            files+=("$TARGET")
-          else
-            while IFS= read -r file; do
-              files+=("$file")
-            done < <(find . -type f -name "*.sops.yaml" ! -path "./.sops.yaml" | sort)
-          fi
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No .sops.yaml files found."
-            exit 0
-          fi
-
-          AGE_KEY=$(ssh-to-age -private-key -i {{.SSH_KEY}})
-
-          for file in "${files[@]}"; do
-            secret="${file%.sops.yaml}.secret.yaml"
-            echo "Decrypting $file -> $secret"
-            SOPS_AGE_KEY="$AGE_KEY" sops -d "$file" > "$secret"
-          done
-        '
+      - ./scripts/secrets_decrypt.sh "{{.FILE}}" {{.SSH_KEY}}
 
   secrets:checkout:
     desc: "Alias for secrets:decrypt (decrypts specified/all .sops files)"
@@ -105,241 +65,19 @@ tasks:
     desc: "Re-encrypt updated .secret.yaml files back into .sops.yaml"
     deps: [prereqs]
     cmds:
-      - |
-        bash -c '
-          set -euo pipefail
-          TARGET="{{.FILE}}"
-
-          if [ -n "$TARGET" ]; then
-            case "$TARGET" in
-              *.secret.yaml) ;;
-              *.sops.yaml) TARGET="${TARGET%.sops.yaml}.secret.yaml" ;;
-              *.sealed.yaml) TARGET="${TARGET%.sealed.yaml}.secret.yaml" ;;
-              *.yaml) TARGET="${TARGET%.yaml}.secret.yaml" ;;
-              *) TARGET="${TARGET}.secret.yaml" ;;
-            esac
-          fi
-
-          files=()
-          if [ -n "$TARGET" ]; then
-            if [ ! -f "$TARGET" ]; then
-              echo "File $TARGET not found" >&2
-              exit 1
-            fi
-            files+=("$TARGET")
-          else
-            while IFS= read -r file; do
-              files+=("$file")
-            done < <(find . -type f -name "*.secret.yaml" | sort)
-          fi
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No .secret.yaml files found."
-            exit 0
-          fi
-
-          for secret in "${files[@]}"; do
-            if [ ! -f "$secret" ]; then
-              echo "Skipping missing $secret"
-              continue
-            fi
-
-            sops_file="${secret%.secret.yaml}.sops.yaml"
-            if [ -f "$sops_file" ] && [ "$secret" -ot "$sops_file" ]; then
-              echo "Skipping $secret (encrypted file newer)"
-              continue
-            fi
-
-            tmp="$(mktemp "${sops_file}.XXXXXX")"
-            cp "$secret" "$tmp"
-            echo "Encrypting $secret -> $sops_file"
-            if sops --encrypt --input-type yaml --output-type yaml --in-place "$tmp"; then
-              mv "$tmp" "$sops_file"
-            else
-              rm -f "$tmp"
-              echo "Failed to encrypt $secret" >&2
-              exit 1
-            fi
-          done
-        '
+      - ./scripts/secrets_checkin.sh "{{.FILE}}"
 
   secrets:seal:
     desc: "Turn .secret.yaml files into .sealed.yaml manifests"
     deps: [prereqs]
     cmds:
-      - |
-        bash -c '
-          set -euo pipefail
-          TARGET="{{.FILE}}"
-          CONTROLLER="{{.KUBE_CONTROLLER}}"
-          NAMESPACE="{{.KUBE_NAMESPACE}}"
-          CONTEXT="{{.KUBE_CONTEXT}}"
-          REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-          META_EXTRACTOR="$REPO_ROOT/scripts/sealed_controller_meta.py"
-
-          if [ -n "$TARGET" ]; then
-            case "$TARGET" in
-              *.sops.yaml) ;;
-              *.secret.yaml) TARGET="${TARGET%.secret.yaml}.sops.yaml" ;;
-              *.sealed.yaml) TARGET="${TARGET%.sealed.yaml}.sops.yaml" ;;
-              *.yaml) TARGET="${TARGET%.yaml}.sops.yaml" ;;
-              *) TARGET="${TARGET}.sops.yaml" ;;
-            esac
-          fi
-
-          files=()
-          if [ -n "$TARGET" ]; then
-            if [ ! -f "$TARGET" ]; then
-              echo "File $TARGET not found" >&2
-              exit 1
-            fi
-            files+=("$TARGET")
-          else
-            while IFS= read -r file; do
-              files+=("$file")
-            done < <(find . -type f -name "*.sops.yaml" ! -path "./.sops.yaml" | sort)
-          fi
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No .sops.yaml files found."
-            exit 0
-          fi
-
-          AGE_KEY=$(ssh-to-age -private-key -i {{.SSH_KEY}})
-          common_kubeseal_args=("--format=yaml")
-          if [ -n "$CONTEXT" ]; then
-            common_kubeseal_args+=("--context=$CONTEXT")
-          fi
-
-          for file in "${files[@]}"; do
-            secret="${file%.sops.yaml}.secret.yaml"
-            sealed="${file%.sops.yaml}.sealed.yaml"
-
-            if [ ! -f "$secret" ]; then
-              echo "Missing $secret, decrypting from $file"
-              SOPS_AGE_KEY="$AGE_KEY" sops -d "$file" > "$secret"
-            fi
-
-            controller_name_from_meta=""
-            controller_namespace_from_meta=""
-            if command -v python3 >/dev/null 2>&1 && [ -f "$META_EXTRACTOR" ]; then
-              meta_out="$(python3 "$META_EXTRACTOR" "$secret" || true)"
-              if [ -n "$meta_out" ]; then
-                eval "$meta_out"
-              fi
-            fi
-
-            effective_controller="$CONTROLLER"
-            if [ -n "${controller_name_from_meta:-}" ]; then
-              effective_controller="$controller_name_from_meta"
-            fi
-
-            effective_namespace="$NAMESPACE"
-            if [ -n "${controller_namespace_from_meta:-}" ]; then
-              effective_namespace="$controller_namespace_from_meta"
-            fi
-
-            kubeseal_args=("--controller-name=$effective_controller" "--controller-namespace=$effective_namespace")
-            kubeseal_args+=("${common_kubeseal_args[@]}")
-
-            echo "Sealing $secret -> $sealed (controller ns: $effective_namespace)"
-            kubeseal "${kubeseal_args[@]}" < "$secret" > "$sealed"
-          done
-        '
+      - ./scripts/secrets_seal.sh "{{.FILE}}" {{.SSH_KEY}} {{.KUBE_CONTROLLER}} {{.KUBE_NAMESPACE}} "{{.KUBE_CONTEXT}}"
 
   secrets:seal-changed:
     desc: "Seal only the secrets whose .sops.yaml has changed"
     deps: [prereqs]
     cmds:
-      - |
-        bash -c '
-          set -euo pipefail
-          TARGET="{{.FILE}}"
-          CONTROLLER="{{.KUBE_CONTROLLER}}"
-          NAMESPACE="{{.KUBE_NAMESPACE}}"
-          CONTEXT="{{.KUBE_CONTEXT}}"
-          REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-          META_EXTRACTOR="$REPO_ROOT/scripts/sealed_controller_meta.py"
-
-          if [ -n "$TARGET" ]; then
-            case "$TARGET" in
-              *.sops.yaml) ;;
-              *.secret.yaml) TARGET="${TARGET%.secret.yaml}.sops.yaml" ;;
-              *.sealed.yaml) TARGET="${TARGET%.sealed.yaml}.sops.yaml" ;;
-              *.yaml) TARGET="${TARGET%.yaml}.sops.yaml" ;;
-              *) TARGET="${TARGET}.sops.yaml" ;;
-            esac
-          fi
-
-          files=()
-          if [ -n "$TARGET" ]; then
-            if [ ! -f "$TARGET" ]; then
-              echo "File $TARGET not found" >&2
-              exit 1
-            fi
-            files+=("$TARGET")
-          else
-            while IFS= read -r file; do
-              files+=("$file")
-            done < <(find . -type f -name "*.sops.yaml" ! -path "./.sops.yaml" | sort)
-          fi
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No .sops.yaml files found."
-            exit 0
-          fi
-
-          AGE_KEY=$(ssh-to-age -private-key -i {{.SSH_KEY}})
-          common_kubeseal_args=("--format=yaml")
-          if [ -n "$CONTEXT" ]; then
-            common_kubeseal_args+=("--context=$CONTEXT")
-          fi
-
-          updated=0
-          for file in "${files[@]}"; do
-            secret="${file%.sops.yaml}.secret.yaml"
-            sealed="${file%.sops.yaml}.sealed.yaml"
-
-            if [ ! -f "$secret" ] || [ "$file" -nt "$secret" ]; then
-              echo "Refreshing plaintext $secret from $file"
-              SOPS_AGE_KEY="$AGE_KEY" sops -d "$file" > "$secret"
-            fi
-
-            if [ ! -f "$sealed" ] || [ "$file" -nt "$sealed" ] || [ "$secret" -nt "$sealed" ]; then
-              controller_name_from_meta=""
-              controller_namespace_from_meta=""
-              if command -v python3 >/dev/null 2>&1 && [ -f "$META_EXTRACTOR" ]; then
-                meta_out="$(python3 "$META_EXTRACTOR" "$secret" || true)"
-                if [ -n "$meta_out" ]; then
-                  eval "$meta_out"
-                fi
-              fi
-
-              effective_controller="$CONTROLLER"
-              if [ -n "${controller_name_from_meta:-}" ]; then
-                effective_controller="$controller_name_from_meta"
-              fi
-
-              effective_namespace="$NAMESPACE"
-              if [ -n "${controller_namespace_from_meta:-}" ]; then
-                effective_namespace="$controller_namespace_from_meta"
-              fi
-
-              kubeseal_args=("--controller-name=$effective_controller" "--controller-namespace=$effective_namespace")
-              kubeseal_args+=("${common_kubeseal_args[@]}")
-
-              updated=1
-              echo "Sealing $secret -> $sealed (controller ns: $effective_namespace)"
-              kubeseal "${kubeseal_args[@]}" < "$secret" > "$sealed"
-            else
-              echo "Skipping $sealed (already up to date)"
-            fi
-          done
-
-          if [ $updated -eq 0 ]; then
-            echo "No secrets required resealing."
-          fi
-        '
+      - ./scripts/secrets_seal_changed.sh "{{.FILE}}" {{.SSH_KEY}} {{.KUBE_CONTROLLER}} {{.KUBE_NAMESPACE}} "{{.KUBE_CONTEXT}}"
 
   secrets:sync:
     desc: "Decrypt and seal in one go"
@@ -365,83 +103,10 @@ tasks:
   secrets:clean:
     desc: "Remove generated .secret.yaml files"
     cmds:
-      - |
-        bash -c '
-          set -euo pipefail
-          TARGET="{{.FILE}}"
-
-          if [ -n "$TARGET" ]; then
-            case "$TARGET" in
-              *.secret.yaml) ;;
-              *.sops.yaml) TARGET="${TARGET%.sops.yaml}.secret.yaml" ;;
-              *.sealed.yaml) TARGET="${TARGET%.sealed.yaml}.secret.yaml" ;;
-              *.yaml) TARGET="${TARGET%.yaml}.secret.yaml" ;;
-              *) TARGET="${TARGET}.secret.yaml" ;;
-            esac
-          fi
-
-          files=()
-          if [ -n "$TARGET" ]; then
-            files+=("$TARGET")
-          else
-            while IFS= read -r file; do
-              files+=("$file")
-            done < <(find . -type f -name "*.secret.yaml" | sort)
-          fi
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No .secret.yaml files to remove."
-            exit 0
-          fi
-
-          for file in "${files[@]}"; do
-            if [ -f "$file" ]; then
-              echo "Removing $file"
-              rm -f "$file"
-            fi
-          done
-        '
+      - ./scripts/secrets_clean.sh "{{.FILE}}"
 
   secrets:rotate:
     desc: "Run sops updatekeys across .sops.yaml files"
     deps: [prereqs]
     cmds:
-      - |
-        bash -c '
-          set -euo pipefail
-          TARGET="{{.FILE}}"
-
-          if [ -n "$TARGET" ]; then
-            case "$TARGET" in
-              *.sops.yaml) ;;
-              *.secret.yaml) TARGET="${TARGET%.secret.yaml}.sops.yaml" ;;
-              *.sealed.yaml) TARGET="${TARGET%.sealed.yaml}.sops.yaml" ;;
-              *.yaml) TARGET="${TARGET%.yaml}.sops.yaml" ;;
-              *) TARGET="${TARGET}.sops.yaml" ;;
-            esac
-          fi
-
-          files=()
-          if [ -n "$TARGET" ]; then
-            if [ ! -f "$TARGET" ]; then
-              echo "File $TARGET not found" >&2
-              exit 1
-            fi
-            files+=("$TARGET")
-          else
-            while IFS= read -r file; do
-              files+=("$file")
-            done < <(find . -type f -name "*.sops.yaml" ! -path "./.sops.yaml" | sort)
-          fi
-
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No .sops.yaml files found."
-            exit 0
-          fi
-
-          AGE_KEY=$(ssh-to-age -private-key -i {{.SSH_KEY}})
-          for file in "${files[@]}"; do
-            echo "Rotating keys for $file"
-            SOPS_AGE_KEY="$AGE_KEY" sops updatekeys -y "$file"
-          done
-        '
+      - ./scripts/secrets_rotate.sh "{{.FILE}}" {{.SSH_KEY}}

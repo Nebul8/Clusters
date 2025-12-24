@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: game-server-accounts
+    namespace: udl
+    annotations:
+        sealedsecrets.bitnami.com/controller-name: sealed-secrets-controller
+        sealedsecrets.bitnami.com/controller-namespace: kube-system
+stringData:
+    UDL_ADVANCED_ONE: ENC[AES256_GCM,data:TrqZLOlRUOWvqp5gP9oA8mwK2qakYrwMZB59A7SERMw=,iv:2CCPrW46m0dhwYzq2jEDmtsW0mKSwZqGqF/AN2dDYzQ=,tag:8yX5u5Y9NPc431rW/HiK9g==,type:str]
+    UDL_ADVANCED_TWO: ENC[AES256_GCM,data:syrQqDFBt2IooczCR6h9K53ClsWLmI/KsVKtRwHfGN8=,iv:A4xZQQ1KPdNEmgP8s2ioo17dfeNqTjIJSNSazOym47o=,tag:gs9WWUjaY5aVG1rO9uorsw==,type:str]
+    UDL_TEST_ONE: ENC[AES256_GCM,data:EuhZ64rOqFwdKtEZ2q067usGbsVfrvUeMHlJ0WrGahg=,iv:ag/ZiJfvE6kUvWEiJsZWgCh0NkKNK9W0VGBNLJ1vKCw=,tag:J8N91MMkRcrWgW4drI0A7w==,type:str]
+    UDL_TEST_TWO: ENC[AES256_GCM,data:wT8DnzMSsoUNaQxtqqdLNxPtqDI613vWsDRata7OD+o=,iv:iuZGFywNvAjGEcJzDZTTOglKj74JRuHIJNLBSJcfVeM=,tag:ifFyOPPmmtLGswrJxj9PwQ==,type:str]
+sops:
+    age:
+        - recipient: age1ck89m855d05rfv8dn2m6uf7htuqth9rhzw6glnz3k7mhhnfghf6qnkughe
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBhUUxLbnpHbnZLUmtadlJJ
+            bnd6ekF4MDFIcWI5TnFSQVM5dXdWVkx6Z2lBCmhQako1TThBS0dtUGRYT0dKVEtY
+            RDRvYlFxMTNveHo0MkRBNm5GcFdMV2cKLS0tICtvSHlwOVZyRm5ONGJ6UDBCOHoy
+            b1VoQzZDeVltazZ3TnhZa0NsbjFyTlkKbuPDINkEuI4BzYbB7NbXfGbfZKoAkJMh
+            ujKI5nhVmOdEmu1wuDVSBxY3IR8tBI1zXyZt/cL7slv9tP5A19F03A==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-12-24T09:56:46Z"
+    mac: ENC[AES256_GCM,data:jpBXnWNeZ2pc4sygD06CiEnZDrCVbDrR0mj2pskQlb5INuC8wlIjohJWdcuhP144UdTDuGt/tXmuTobm2jSDqQZEeP1vcygbGFdfFegGlzccT9ix5Z2RIG7Hb8/X9XtGtKL3jEKUzAyQMSOxDKFznGeKgNW7A5fG7aSzSYlh3RU=,iv:TLb1TB9q4sSG2C3jKwywqMufrLFh32Js/dbMOaSlREQ=,tag:sH4ND8QkDMO/hoIP0gPFxA==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

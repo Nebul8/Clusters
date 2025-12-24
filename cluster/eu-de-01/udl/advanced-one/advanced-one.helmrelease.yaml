@@ -1,0 +1,125 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: advanced-one
+  namespace: udl
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: tf2chart
+    namespace: default
+  interval: 1m
+  targetNamespace: udl
+  values:
+    workload:
+      kind: Deployment
+      nameOverride: "advanced-one"
+      deploymentStrategy:
+        type: Recreate
+
+    app:
+      name: advanced-one
+      image:
+        repository: ghcr.io/udl-tf/tf2-image
+        tag: latest
+        pullPolicy: IfNotPresent
+      ports:
+        - name: game-udp
+          containerPort: 27015
+          protocol: UDP
+        - name: sourcetv-udp
+          containerPort: 27120
+          protocol: UDP
+        - name: client-udp
+          containerPort: 37005
+          protocol: UDP
+        - name: steam-udp
+          containerPort: 26900
+          protocol: UDP
+      env:
+        - name: SRCDS_PORT
+          value: "27015"
+        - name: SRCDS_TV_PORT
+          value: "27120"
+        - name: SRCDS_CLIENT_PORT
+          value: "37005"
+        - name: SRCDS_STEAM_PORT
+          value: "26900"
+        - name: SRCDS_MAXPLAYERS
+          value: "32"
+        - name: SRCDS_RCONPW
+          valueFrom:
+            secretKeyRef:
+              name: rcon-password
+              key: RCON_PASSWORD
+        - name: SRCDS_STARTMAP
+          value: tfdb_octagon_udl_v4
+        - name: SRCDS_STATIC_HOSTNAME
+          value: "UDL.TF | EU | Advanced Server #1"
+        - name: SRCDS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: game-server-accounts
+              key: UDL_ADVANCED_ONE
+        - name: SRCDS_TICKRATE
+          value: "128"
+      command: []
+      args: []
+      stdin: true
+      tty: true
+
+    paths:
+      hostSource: /mnt/tf2
+      hostPathType: Directory
+      containerTarget: /tf
+
+    decompressor:
+      scanOverlays: ["serverfiles-base", "serverfiles-dodgeball-base"]
+
+    merger:
+      watcher:
+        enabled: true
+        watchParentDepth: 1
+
+    overlays:
+      - name: serverfiles-base
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfiles-dodgeball-base
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/dodgeball/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfiles-dodgeball-advanced
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/dodgeball/advanced
+        hostPathType: Directory
+        readOnly: false
+
+    writablePaths:
+      - tf/logs
+
+    copyTemplates:
+      - targetPath: tf/addons/sourcemod/configs/sourcebans
+        overlay: serverfiles-base
+        sourcePath: serverfiles/base/addons/sourcemod/configs/sourcebans
+        cleanTarget: false
+        targetMode: writable
+        onlyOnInit: true
+
+    permissionsInit:
+      applyDuringMerge: true
+      applyPaths:
+        - /tf
+      user: 1000
+      group: 1000
+      chmod: "775"
+
+    hostNetwork: true
+    dnsPolicy: ""
+    serviceAccountName: ""
+
+    service:
+      enabled: false

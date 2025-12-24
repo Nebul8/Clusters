@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: port-forwarder-advanced-two
+  namespace: udl
+  labels:
+    app: port-forwarder
+    server: advanced-two
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: port-forwarder
+      server: advanced-two
+  template:
+    metadata:
+      labels:
+        app: port-forwarder
+        server: advanced-two
+    spec:
+      hostNetwork: true
+      containers:
+        - name: socat
+          image: alpine/socat:latest
+          command:
+            - sh
+            - -c
+            - |
+              # Forward old default TF2 ports to advanced-one new ports
+              # Old: 28016 -> New: 27016 (game port)
+              socat UDP4-LISTEN:28016,fork,reuseaddr UDP4:127.0.0.1:27016 &
+              wait
+          securityContext:
+            capabilities:
+              add: ["NET_BIND_SERVICE"]
+          resources:
+            requests:
+              memory: "16Mi"
+              cpu: "10m"
+            limits:
+              memory: "32Mi"
+              cpu: "50m"

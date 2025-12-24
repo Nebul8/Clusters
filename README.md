@@ -363,3 +363,8 @@ See [LICENSE](LICENSE) file for details.
 - [Helm](https://helm.sh/) - Kubernetes package manager
 - [update-controller](https://github.com/UDL-TF) or equivalent service - Controller for managing game server updates
 - [restart-controller](https://github.com/UDL-TF) or equivalent service - Controller for managing game server restarts
+- [External Secrets Operator](https://external-secrets.io/) - Bridges cloud secret stores into the cluster so workloads stay in sync with upstream secrets
+- [Kubernetes Replicator](https://github.com/mittwald/kubernetes-replicator) - Copies namespaces-scoped secrets/configmaps so shared credentials stay consistent everywhere
+- [Bitnami Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) - Enables storing encrypted secrets in Git that Flux can safely reconcile
+- [sops](https://github.com/mozilla/sops) - Encrypts and decrypts secret manifests using Age recipients
+- [ssh-to-age](https://github.com/Mic92/ssh-to-age) - Derives Age keys from existing SSH identities for sops usage

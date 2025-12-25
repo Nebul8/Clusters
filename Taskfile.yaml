@@ -1,10 +1,17 @@
 version: "3"
 
+# Load environment variables from .env file if it exists
+dotenv: [".env"]
+
 vars:
-  SSH_KEY: ~/.ssh/id_ed25519
-  KUBE_CONTROLLER: sealed-secrets
-  KUBE_NAMESPACE: kube-system
-  KUBE_CONTEXT: ""
+  SSH_KEY:
+    sh: echo "${SSH_KEY:-$HOME/.ssh/id_ed25519}"
+  KUBE_CONTROLLER:
+    sh: echo "${KUBE_CONTROLLER:-sealed-secrets}"
+  KUBE_NAMESPACE:
+    sh: echo "${KUBE_NAMESPACE:-kube-system}"
+  KUBE_CONTEXT:
+    sh: echo "${KUBE_CONTEXT:-}"
 
 tasks:
   default:
@@ -19,10 +26,28 @@ tasks:
       - which ssh-to-age
     silent: true
 
+  check:ssh-key:
+    desc: "Verify SSH key exists and is valid"
+    internal: true
+    cmds:
+      - |
+        if [ ! -f "{{.SSH_KEY}}" ]; then
+          echo "ERROR: SSH key not found at {{.SSH_KEY}}"
+          echo "Please create .env from .env.example and set SSH_KEY path"
+          exit 1
+        fi
+        if [ ! -f "{{.SSH_KEY}}.pub" ]; then
+          echo "ERROR: Public key not found at {{.SSH_KEY}}.pub"
+          exit 1
+        fi
+        echo "✓ SSH key found at {{.SSH_KEY}}"
+    silent: true
+
   # ---------------- USER MANAGEMENT ----------------
 
   key:print:
     desc: "Show your public Age key (derived from SSH_KEY)"
+    deps: [check:ssh-key]
     cmds:
       - ssh-to-age -i {{.SSH_KEY}}.pub
     silent: true
@@ -44,44 +69,44 @@ tasks:
     desc: "Open a .sops.yaml file with SOPS"
     requires:
       vars: [FILE]
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - export SOPS_AGE_KEY=$(ssh-to-age -private-key -i {{.SSH_KEY}}) && sops {{.FILE}}
 
   secrets:decrypt:
     desc: "Create/refresh .secret.yaml files from .sops.yaml files"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - ./scripts/secrets_decrypt.sh "{{.FILE}}" {{.SSH_KEY}}
 
   secrets:checkout:
     desc: "Alias for secrets:decrypt (decrypts specified/all .sops files)"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - task: secrets:decrypt
         vars: { FILE: "{{.FILE}}" }
 
   secrets:checkin:
     desc: "Re-encrypt updated .secret.yaml files back into .sops.yaml"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - ./scripts/secrets_checkin.sh "{{.FILE}}"
 
   secrets:seal:
     desc: "Turn .secret.yaml files into .sealed.yaml manifests"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - ./scripts/secrets_seal.sh "{{.FILE}}" {{.SSH_KEY}} {{.KUBE_CONTROLLER}} {{.KUBE_NAMESPACE}} "{{.KUBE_CONTEXT}}"
 
   secrets:seal-changed:
     desc: "Seal only the secrets whose .sops.yaml has changed"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - ./scripts/secrets_seal_changed.sh "{{.FILE}}" {{.SSH_KEY}} {{.KUBE_CONTROLLER}} {{.KUBE_NAMESPACE}} "{{.KUBE_CONTEXT}}"
 
   secrets:sync:
     desc: "Decrypt and seal in one go"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - task: secrets:decrypt
         vars: { FILE: "{{.FILE}}" }
@@ -90,7 +115,7 @@ tasks:
 
   secrets:roundtrip:
     desc: "Workflow helper: checkout -> manual edit -> checkin -> seal changed"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - task: secrets:checkout
         vars: { FILE: "{{.FILE}}" }
@@ -107,6 +132,6 @@ tasks:
 
   secrets:rotate:
     desc: "Run sops updatekeys across .sops.yaml files"
-    deps: [prereqs]
+    deps: [prereqs, check:ssh-key]
     cmds:
       - ./scripts/secrets_rotate.sh "{{.FILE}}" {{.SSH_KEY}}

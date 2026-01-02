@@ -16,27 +16,31 @@ spec:
       securityContext:
         fsGroup: 33 # www-data group
       initContainers:
+        # Setup initial permissions and directory structure
         - name: setup-permissions
           image: busybox:1.36
           command:
-            [
-              "sh",
-              "-c",
-              "chown -R 33:33 /var/www/html && chmod -R 755 /var/www/html",
-            ]
+            - "sh"
+            - "-c"
+            - |
+              mkdir -p /var/www/html/materials /var/www/html/models /var/www/html/sounds /var/www/html/particles /var/www/html/maps
+              chown -R 33:33 /var/www/html
+              chmod -R 755 /var/www/html
           volumeMounts:
             - name: fastdl-content
               mountPath: /var/www/html
           securityContext:
-            runAsUser: 0 # Run as root to change ownership
+            runAsUser: 0
+      
       containers:
+        # Main HTTP server container
         - name: http-server
           image: php:8.2-apache
           ports:
             - containerPort: 80
           securityContext:
-            runAsUser: 33 # www-data user
-            runAsGroup: 33 # www-data group
+            runAsUser: 33
+            runAsGroup: 33
           volumeMounts:
             - name: fastdl-content
               mountPath: /var/www/html
@@ -46,14 +50,218 @@ spec:
             - name: serve-php
               mountPath: /var/www/html/serve.php
               subPath: serve.php
+        
+        # File sync sidecar: Copy specific folders every 30 seconds
+        - name: file-sync
+          image: busybox:1.36
+          command:
+            - "sh"
+            - "-c"
+            - |
+              #!/bin/sh
+              echo "Starting file sync service..."
+              
+              # Read search paths from environment or use defaults
+              SEARCH_PATHS="${SEARCH_PATHS:-/mnt/serverfiles}"
+              SEARCH_PATHS_PRIVATE="${SEARCH_PATHS_PRIVATE:-/mnt/serverfilesprivate}"
+              
+              sync_files() {
+                echo "$(date): Starting sync operation..."
+                
+                # Function to check if a directory path contains any of the resource folder names in its parent path
+                is_nested_resource() {
+                  local dir_path=$1
+                  local folder_name=$2
+                  # Remove the folder name from the end to get parent path
+                  local parent_path=$(dirname "${dir_path}")
+                  
+                  # Check if parent path contains materials, models, sounds, particles, or maps
+                  echo "${parent_path}" | grep -qE '/(materials|models|sounds|particles|maps)(/|$)'
+                  return $?
+                }
+                
+                # Function to copy a specific folder type from all server directories
+                copy_folder_type() {
+                  local folder_name=$1
+                  local target_dir="/var/www/html/${folder_name}"
+                  
+                  echo "Syncing ${folder_name}..."
+                  
+                  # Create target directory if it doesn't exist
+                  mkdir -p "${target_dir}"
+                  
+                  # Copy from each search path (space-separated)
+                  for base_path in ${SEARCH_PATHS}; do
+                    if [ -d "${base_path}" ]; then
+                      find "${base_path}" -type d -name "${folder_name}" | while read -r src_dir; do
+                        # Skip if this folder is nested inside another resource folder
+                        if is_nested_resource "${src_dir}" "${folder_name}"; then
+                          echo "  Skipping nested ${src_dir}"
+                          continue
+                        fi
+                        echo "  Copying from ${src_dir}"
+                        cp -rf "${src_dir}/." "${target_dir}/" 2>/dev/null || true
+                      done
+                    fi
+                  done
+                  
+                  # Copy from private search paths
+                  for base_path in ${SEARCH_PATHS_PRIVATE}; do
+                    if [ -d "${base_path}" ]; then
+                      find "${base_path}" -type d -name "${folder_name}" | while read -r src_dir; do
+                        # Skip if this folder is nested inside another resource folder
+                        if is_nested_resource "${src_dir}" "${folder_name}"; then
+                          echo "  Skipping nested ${src_dir}"
+                          continue
+                        fi
+                        echo "  Copying from ${src_dir}"
+                        cp -rf "${src_dir}/." "${target_dir}/" 2>/dev/null || true
+                      done
+                    fi
+                  done
+                }
+                
+                # Function to concatenate .bsp.bz2.parts folders into single .bz2 files
+                concat_map_parts() {
+                  local base_path=$1
+                  
+                  if [ ! -d "${base_path}" ]; then
+                    return
+                  fi
+                  
+                  # Find all .bsp.bz2.parts directories
+                  find "${base_path}" -type d -name "*.bsp.bz2.parts" | while read -r parts_dir; do
+                    local map_name=$(basename "${parts_dir}" .parts)
+                    local target_file="/var/www/html/maps/${map_name}"
+                    
+                    echo "  Concatenating parts from ${parts_dir} -> ${map_name}"
+                    
+                    # Concatenate all .part.* files in order
+                    cat "${parts_dir}/${map_name}".part.* > "${target_file}" 2>/dev/null || true
+                    
+                    if [ -f "${target_file}" ]; then
+                      echo "    Created ${target_file}"
+                    fi
+                  done
+                }
+                
+                # Sync materials, models, sounds, and particles
+                copy_folder_type "materials"
+                copy_folder_type "models"
+                copy_folder_type "sounds"
+                copy_folder_type "particles"
+                
+                # Sync maps (only .bz2 files)
+                echo "Syncing maps (*.bz2 only)..."
+                mkdir -p /var/www/html/maps
+                
+                # Process each search path
+                for base_path in ${SEARCH_PATHS}; do
+                  if [ -d "${base_path}" ]; then
+                    find "${base_path}" -type d -name "maps" | while read -r src_dir; do
+                      # Skip if this maps folder is nested inside another resource folder
+                      if is_nested_resource "${src_dir}" "maps"; then
+                        echo "  Skipping nested ${src_dir}"
+                        continue
+                      fi
+                      echo "  Copying .bz2 maps from ${src_dir}"
+                      find "${src_dir}" -type f -name "*.bz2" -exec cp -f {} /var/www/html/maps/ \; 2>/dev/null || true
+                    done
+                    
+                    # Handle .bsp.bz2.parts folders
+                    concat_map_parts "${base_path}"
+                  fi
+                done
+                
+                # Process private search paths
+                for base_path in ${SEARCH_PATHS_PRIVATE}; do
+                  if [ -d "${base_path}" ]; then
+                    find "${base_path}" -type d -name "maps" | while read -r src_dir; do
+                      # Skip if this maps folder is nested inside another resource folder
+                      if is_nested_resource "${src_dir}" "maps"; then
+                        echo "  Skipping nested ${src_dir}"
+                        continue
+                      fi
+                      echo "  Copying .bz2 maps from ${src_dir}"
+                      find "${src_dir}" -type f -name "*.bz2" -exec cp -f {} /var/www/html/maps/ \; 2>/dev/null || true
+                    done
+                    
+                    # Handle .bsp.bz2.parts folders
+                    concat_map_parts "${base_path}"
+                  fi
+                done
+                
+                # Fix permissions
+                chown -R 33:33 /var/www/html
+                chmod -R 755 /var/www/html
+                
+                echo "$(date): Sync operation completed"
+              }
+              
+              # Initial sync
+              sync_files
+              
+              # Continuous sync every 30 seconds
+              while true; do
+                sleep 30
+                sync_files
+              done
+          env:
+            - name: SEARCH_PATHS
+              valueFrom:
+                configMapKeyRef:
+                  name: fastdl-sync-config
+                  key: search-paths
+                  optional: true
+            - name: SEARCH_PATHS_PRIVATE
+              valueFrom:
+                configMapKeyRef:
+                  name: fastdl-sync-config
+                  key: search-paths-private
+                  optional: true
+          volumeMounts:
+            - name: serverfiles
+              mountPath: /mnt/serverfiles
+              readOnly: true
+            - name: serverfiles-private
+              mountPath: /mnt/serverfilesprivate
+              readOnly: true
+            - name: fastdl-content
+              mountPath: /var/www/html
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 250m
+            requests:
+              memory: 64Mi
+              cpu: 50m
+      
       volumes:
-        - name: fastdl-content
+        # Mount entire serverfiles directory
+        - name: serverfiles
           hostPath:
-            path: /mnt/fastdl
-            type: DirectoryOrCreate
+            path: /mnt/serverfiles
+            type: Directory
+        
+        # Mount private serverfiles directory
+        - name: serverfiles-private
+          hostPath:
+            path: /mnt/serverfilesprivate
+            type: Directory
+
+        # Target merged content
+        - name: fastdl-content
+          emptyDir: {}
+        
+        # Config volumes
         - name: apache-config
           configMap:
             name: apache-config
+        
         - name: serve-php
           secret:
             secretName: serve-php

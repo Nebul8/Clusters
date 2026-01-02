@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastdl-sync-config
+  namespace: udl
+data:
+  # Space-separated list of paths to search recursively for materials, models, sounds, particles, maps
+  # The script will use 'find' to search all subdirectories under these paths
+  # Example: "/mnt/serverfiles/serverfiles/base /mnt/serverfiles/serverfiles/bhop /mnt/serverfiles/serverfiles/dodgeball"
+  search-paths: "/mnt/serverfiles"
+  
+  # Space-separated list of private serverfiles paths to search recursively
+  search-paths-private: "/mnt/serverfilesprivate"

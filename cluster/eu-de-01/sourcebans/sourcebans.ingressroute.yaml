@@ -1,5 +1,3 @@
----
-# SourceBans IngressRoute (Traefik CRD)
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -17,7 +15,6 @@ spec:
   tls:
     secretName: sourcebans-tls
 ---
-# HTTP to HTTPS redirect
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -35,7 +32,6 @@ spec:
       middlewares:
         - name: https-redirect
 ---
-# HTTPS redirect middleware
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:

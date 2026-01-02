@@ -1,9 +1,7 @@
----
-# SourceBans Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: sourcebans-service
+  name: sourcebans
   namespace: sourcebans
 spec:
   selector:

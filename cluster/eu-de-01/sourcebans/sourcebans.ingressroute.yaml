@@ -10,7 +10,7 @@ spec:
     - match: Host(`bans.udl.tf`)
       kind: Rule
       services:
-        - name: sourcebans-service
+        - name: sourcebans
           port: 80
   tls:
     secretName: sourcebans-tls

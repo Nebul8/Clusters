@@ -8,22 +8,22 @@ metadata:
         sealedsecrets.bitnami.com/controller-name: sealed-secrets-controller
         sealedsecrets.bitnami.com/controller-namespace: kube-system
 stringData:
-    UDL_ADVANCED_ONE: ENC[AES256_GCM,data:qMABNjlDx/Qebstdc4wN2G+Z2AUJiQfUYX8KTyp+V2E=,iv:Jt1b+ivseVzB3y7QkQS9B1Xz2IGNHYKhDUqP71MotLQ=,tag:D2xne+zT8bKy3fMb0OvhdA==,type:str]
-    UDL_ADVANCED_TWO: ENC[AES256_GCM,data:YwMWP1xKGWxd2INM14CK18XP86dYFc/RMGngVCTESs4=,iv:8yCZyfNkHHCpQxxH4mdKdqW89WjdGCmiXJLtMVzG25k=,tag:BtGAcKr3FlWXfq9CXTWl5Q==,type:str]
-    UDL_TEST_ONE: ENC[AES256_GCM,data:fllhW25cSpv+g27jQJIdd7cOaP79uKpSS5qU4Ozxy4o=,iv:GdEtzChHdUW977qqHtqo/gWn0qdrh2YEr8pQv3ZgVXQ=,tag:RYS+uFIj0nAzI3gjZzJGiA==,type:str]
-    UDL_TEST_TWO: ENC[AES256_GCM,data:vdDoohrLFC0+vr38Z2yFcXmESAO8I8U+xgXItt8iqls=,iv:xBxCIFigENV4PeQx7qyFt063eyqk2ZwM0beZodXF/t8=,tag:pmhFE9fNVAmfWCqXlkswtg==,type:str]
+    UDL_ADVANCED_ONE: ENC[AES256_GCM,data:8zZA5PbqkR6ko2SWHE9dCDzZpbkn/16HYCHk3ILaJUs=,iv:NQedm97hY7FTS6aR3prPDQuwY/z8pVByIdFB1wL3Q28=,tag:ulKbhKg/QTau5ee+4gczeA==,type:str]
+    UDL_ADVANCED_TWO: ENC[AES256_GCM,data:lvf3K4Dz+zloLtNEYq47BEfQED9LnZvnhaqRZjDEKFE=,iv:f97hK77PxHDDuiIu7FnyQ4Y5tZ8qobbIkKqLzAYLO8c=,tag:UdlY3daQkpJpKkJvetiWZQ==,type:str]
+    UDL_TEST_ONE: ENC[AES256_GCM,data:wr2CA/Ti4VNCbF0BLNwbnDXG25CBjMa2h9UIDXCevDw=,iv:Jg6nV6mQ5NcyiYKpscpB19y6dnszFx+Z4CirHirccSQ=,tag:msEbOi8zwaNFEtUKAi2GIg==,type:str]
+    UDL_TEST_TWO: ENC[AES256_GCM,data:eYdFwbKCm9ojPGBx74PyNQF5jhGU/KWnGhZpl/KwdNs=,iv:x7Njf5CmtO1dQxnyY9JTzdSkm+0OdbQrQKkYD4mwc40=,tag:VNn4SEfmN3Gm5WbpEaO5Zg==,type:str]
 sops:
     age:
         - recipient: age1ck89m855d05rfv8dn2m6uf7htuqth9rhzw6glnz3k7mhhnfghf6qnkughe
           enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBiT2dUK3NJc3RIZzBkbFRL
-            aFMyOUNuRU1rUS96MEpVOThRb1c3em9jbGtFCktGeUFyTEFvU2dhR1VJY1I1QW83
-            ckd4aGxWZjlRaFFUMTUwQzNNc1lEMDAKLS0tIFFIczMvb1UxdEtVUk5yeko4Y2VU
-            dUZibFVYNTVZUkJDZDY1RFQ5ZjNyNEUKrnimrDG9g68oAKtEG356bDrqjxuvg5bl
-            os0IEkRWS/VbI4o/1FsEGUHaZmO5F/mU8GyZ8DF62iPIzjVOk4S41Q==
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB6bnpSeW1NUHYvbTRUaGNH
+            aGpETkpVcEJnbFJIQXlYaWJSRDN5UURYcHcwCmxNK0R5d1ZzWnRLMjRGT2FPK1Jm
+            S0RTRm44eGxWckJKbU1EK2lKbk5GdFEKLS0tIDNYbmFKT2M3R3JTMjBtQ2xhM3JC
+            VVBmOC9Hd0FvandKdVcxVnZjTnU0dVkKzWczZNhpE/akxb/ZTUAoIechrsBIIiE8
+            lMd7y1TIIfOeT/sDl3taZj00bMUGgcd/Rw17XMhSHP+aXaRuKqWzEw==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-01-04T14:37:53Z"
-    mac: ENC[AES256_GCM,data:e0pdyB1Ju9m/7vo591t7x+sxF73gUgVN8alXUiKTBSjej4ax5McfX014xr/opOjSXxtjS520lOwp2gkfJY0zV7d/KZs/6WDGaD3bBot99kedJVgWaoogQx0T0lOmPn6YWM9yHRTMpPSzGW38dzNBzyTHB48mEk2zYKRyubXcujM=,iv:s6dnB5rmmMb9xTV6gCjaToonjphmMaTaKFLMgwdvWzY=,tag:taN3t/6T8+HinGHk+Vwe+A==,type:str]
+    lastmodified: "2026-01-04T15:13:54Z"
+    mac: ENC[AES256_GCM,data:hO6Y+kpJz8pey7youVvZASaBxWpVwS1ISZ5nEPqXVVHojqjCBIJLVHzbXn9b+Hy/7BiQhjqfaRkiaLRPVt62Zl0futNVU1stCgYI8+2BJ/Jm8dYFC+fY3dlUB49Ka5dJ4Al3k4oUijlWMzcFGvezhDzqW3Ip4w+MlkaoWjwufaY=,iv:FUAs1WkqgeJAuuuMz3gCzhCVstwiJAJgpMgwlUa+2wU=,tag:1pMkXmc5UnLRCgrFVHoGaA==,type:str]
     encrypted_regex: ^(data|stringData)$
     version: 3.11.0

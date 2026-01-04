@@ -28,7 +28,7 @@ spec:
             - |
               # Forward old default TF2 ports to advanced-one new ports
               # Old: 28015 -> New: 27015 (game port)
-              socat UDP4-LISTEN:28015,fork,reuseaddr UDP4:127.0.0.1:27015 &
+              socat -T 300 UDP4-LISTEN:28015,fork,reuseaddr,bind=0.0.0.0 UDP4:127.0.0.1:27015 &
               wait
           securityContext:
             capabilities:

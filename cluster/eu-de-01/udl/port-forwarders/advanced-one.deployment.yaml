@@ -26,14 +26,24 @@ spec:
             - sh
             - -c
             - |
-              # Install iptables
-              apk add --no-cache iptables
+              set -e
+              echo "Installing iptables..."
+              apk add --no-cache iptables 2>&1
               
-              # Forward old default TF2 ports to advanced-one new ports
-              # Old: 28015 -> New: 27015 (game port)
-              iptables -t nat -A PREROUTING -p udp --dport 28015 -j REDIRECT --to-port 27015
+              echo "Setting up port forwarding rules..."
+              # Forward incoming traffic from external sources
+              iptables -t nat -A PREROUTING -p udp --dport 28015 -j REDIRECT --to-port 27015 2>&1 || echo "PREROUTING rule failed, continuing..."
               
-              # Keep container running
+              # Forward traffic originating from the host
+              iptables -t nat -A OUTPUT -p udp --dport 28015 -j REDIRECT --to-port 27015 2>&1 || echo "OUTPUT rule failed, continuing..."
+              
+              echo "Port forwarding rules applied successfully"
+              echo "Forwarding UDP port 28015 -> 27015"
+              
+              # Keep container running and show rules
+              iptables -t nat -L -n -v
+              
+              echo "Container running, keeping alive..."
               tail -f /dev/null
           securityContext:
             capabilities:

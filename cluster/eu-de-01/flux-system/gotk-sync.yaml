@@ -12,6 +12,7 @@ spec:
   secretRef:
     name: flux-system
   url: https://github.com/UDL-TF/Clusters.git
+  ignore: "**/*.sops.yaml"
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

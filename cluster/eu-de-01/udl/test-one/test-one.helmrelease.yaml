@@ -74,7 +74,14 @@ spec:
       containerTarget: /tf
 
     decompressor:
-      scanOverlays: ["serverfiles-base", "serverfiles-dodgeball-base"]
+      scanOverlays: ["serverfiles-dodgeball-base"]
+      cache:
+        enabled: true
+        type: hostPath
+        mountAsOverlay: true
+        overlayName: decomp-cache
+        hostPath: /mnt/dodgeball-cache
+        hostPathType: DirectoryOrCreate
 
     merger:
       watcher:

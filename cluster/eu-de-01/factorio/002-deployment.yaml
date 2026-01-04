@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factorio
+  namespace: factorio
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: factorio
+  template:
+    metadata:
+      labels:
+        app: factorio
+    spec:
+      securityContext:
+        fsGroup: 845
+        runAsUser: 845
+        runAsGroup: 845
+      containers:
+      - name: factorio
+        image: factoriotools/factorio:2.0.72
+        env:
+        - name: PORT
+          value: "31456"
+        - name: RCON_PORT
+          value: "26892"
+        - name: GENERATE_NEW_SAVE
+          value: "true"
+        - name: SAVE_NAME
+          value: "udl-factorio"
+        - name: UPDATE_MODS_ON_START
+          value: "false"
+        - name: LOAD_LATEST_SAVE
+          value: "false"
+        - name: DLC_SPACE_AGE
+          value: "false"
+        ports:
+        - containerPort: 31456
+          protocol: UDP
+          name: game
+        - containerPort: 26892
+          protocol: TCP
+          name: rcon
+        volumeMounts:
+        - name: factorio-data
+          mountPath: /factorio
+        - name: whitelist
+          mountPath: /factorio/config/server-whitelist.json
+          subPath: server-whitelist.json
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+      volumes:
+      - name: factorio-data
+        persistentVolumeClaim:
+          claimName: factorio-data
+      - name: whitelist
+        configMap:
+          name: factorio-whitelist

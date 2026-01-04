@@ -80,6 +80,9 @@ spec:
       watcher:
         enabled: true
         watchParentDepth: 1
+        pollIntervalSeconds: 10
+        decompressPaths:
+          - /mnt/serverfiles/serverfiles/dodgeball/base/maps
 
     overlays:
       - name: serverfiles-base
@@ -100,6 +103,9 @@ spec:
 
     writablePaths:
       - tf/logs
+      - tf/demos
+      - tf/addons/sourcemod/data
+      - tf/addons/sourcemod/logs
 
     copyTemplates:
       - targetPath: tf/addons/sourcemod/configs/sourcebans

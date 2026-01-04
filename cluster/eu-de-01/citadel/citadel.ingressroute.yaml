@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: citadel-ingress
+  namespace: citadel
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`udl.tf`)
+      kind: Rule
+      services:
+        - name: citadel-webserver
+          port: 80
+  tls:
+    secretName: citadel-tls

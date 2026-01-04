@@ -7,7 +7,7 @@ vars:
   SSH_KEY:
     sh: echo "${SSH_KEY:-$HOME/.ssh/id_ed25519}"
   KUBE_CONTROLLER:
-    sh: echo "${KUBE_CONTROLLER:-sealed-secrets}"
+    sh: echo "${KUBE_CONTROLLER:-sealed-secrets-controller}"
   KUBE_NAMESPACE:
     sh: echo "${KUBE_NAMESPACE:-kube-system}"
   KUBE_CONTEXT:

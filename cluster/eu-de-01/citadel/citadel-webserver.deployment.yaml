@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citadel-webserver
+  namespace: citadel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: citadel-webserver
+  template:
+    metadata:
+      labels:
+        app: citadel-webserver
+    spec:
+      imagePullSecrets:
+        - name: ghcr-login-secret
+      containers:
+        - name: rails
+          image: ghcr.io/dodgeball-tf/citadel-udl:build-140 # {"$imagepolicy": "flux-system:citadel-udl-latest"}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: RAILS_ENV
+              value: "production"
+            - name: SERVER_RESTART_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: citadel-secrets
+                  key: SERVER_RESTART_SECRET
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1024Mi"
+          volumeMounts:
+            - name: app-data
+              mountPath: /app/public
+            - name: credentials
+              mountPath: /app/config/master.key
+              subPath: master.key
+              readOnly: true
+            - name: credentials
+              mountPath: /app/config/credentials.yml.enc
+              subPath: credentials.yml.enc
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+      volumes:
+        - name: app-data
+          hostPath:
+            path: /mnt/citadel/public
+            type: DirectoryOrCreate
+        - name: credentials
+          secret:
+            secretName: citadel-secrets

@@ -1,0 +1,20 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: postgres-creds
+  namespace: citadel
+spec:
+  encryptedData:
+    POSTGRES_PASSWORD: AgB5gPB1AeS4xKY3FbTpdr0OjOXXLeJN6s6HNeWVSa+ZyszgF4SmKqxDtr1SklFMjU5boifC/mPPVpWtIUyBAVKrJesWXsVr36tIKoBFPA08HlPaTd0db/VhUBOi4+STXqKlH1L1Dabhk8PxmFsQspEEGJpfIHNXS2w+896k9/oOR4Dk0vq+z1iTkoE+XWOEkpc7Bqwe9hcqudhUXd7VwvW3axVR5QD3D2j+TVCvxxxxoENn5dsRxUQUO5nHAxJCfvAd3RrSQnCLFoHa2iudbmGbCIWzzFvYnymytVJy0AL6DaKUzZPnRNwHbToy9VUlv1XILV3qSsq0lQ/1VBQu0Ae50MGHX6oc9JSYLb4bPgpqppaxBbNXPVpJ9c8tLSO4qv/l13GitKg0KNXiw442ZkBiVZi0nCKFhJGEDWxf7VCctknJU+a2ecv8JUSKeuLQsL6c2kNpiM0AI67Ecpw3uQZcCya7kB81IQQeDiUC3BJJx4yGwoYRld2fnH73fkgT6Auw/WbFtlBZipe7E8hlUBX5hmlKn9gzz5mRVaY+OfaF/4jlk+u7/9ps0vDNJzYpfG4ehWAp2jc5BxlWR/6MR/i1ax89zgrlhOMDAD3Sea+vWaf9N+q49gSpfnZwkZRIKb/yntQ+nufYMPN+NhA1SHCVQFKZn1vbm8T8Om3RrIVufvHz9WgC77x2YAHQjIunbQXBTsiKqC8=
+    POSTGRES_USER: AgAaNhEedN5CHxv/F0361XiEnFlbtRiD/nTgkpV4W060xK2gymmjbdyl6V4kH5cXEnX2xt2Fc2lodH/1deavy3MkyQGvXeBDG3JZO8daTnRBsbsAxUx3h+Pf3QbdxvgP/cccTBb5Jc2/Rib3+1ehIKCDJzGILOmSRy2EH9KdT7YqPQ9UcqMqyt5HpGOQ7/h7aMe2KweZn3pIs71qLyHHV0NEYixPA3rAHNHvtt78kCw9E/lVM7bNHIRmxnQae2rZ/aS9ePAC88H4h2gb4utwkP80o952nHyYF8Su+TSZhFMrcQrd37PYV+tfS/AnlmTLgEdOAaMIK3Y20Pc9lvB6bQxTwBay4DfsSfYGltdU4lkddsY/+QMuFKp1IlOECAffnIlerbwPA17XNLyJ00zhf+yVePC/gRskHrkM2/0pOHvlTLXf+4anQReAOeA16AYpPwVUxZJ83XnnZNjekZMWvYILpIneV348eb2fVbiearJACzubF7EKCl8u4531PcZnxceQi2X4a1Ad7GnGM5pC40zpUBlI1dZQjcSY5SQvwUss3vr7m1cXW6sW6fQ1T/87yj63UnqXLDmoAfRElexGx9NLuW9TNoU/GthZEMsv+I0wdaB5N1H6Nw17NuGCLYDitLYAbwufe5fWXfXxVj2CYQThetK1Uuxx4VFIQctOAUf4twv1vN1gLBHPP3IiqHP7aNdN8ImoAgym9w==
+  template:
+    metadata:
+      annotations:
+        sealedsecrets.bitnami.com/controller-name: sealed-secrets-controller
+        sealedsecrets.bitnami.com/controller-namespace: kube-system
+      creationTimestamp: null
+      name: postgres-creds
+      namespace: citadel
+    type: Opaque

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: postgres-creds
+    namespace: citadel
+    annotations:
+        sealedsecrets.bitnami.com/controller-name: sealed-secrets-controller
+        sealedsecrets.bitnami.com/controller-namespace: kube-system
+type: Opaque
+stringData:
+    POSTGRES_USER: ENC[AES256_GCM,data:vvYg9RIOmTk=,iv:fAX3aceN9rfvgm64oBXvXjWUun7mepyfOkkDCl6JXsY=,tag:h7BBYPC1bFlzRsgLq0YTgg==,type:str]
+    POSTGRES_PASSWORD: ENC[AES256_GCM,data:kYxCGU9o,iv:Q0V+ArgluU2LpncbZ89aQyjN0+iDi7GWGnKesG/J2Tg=,tag:nAs9/SgLIBrx5zBNgnZXNw==,type:str]
+sops:
+    age:
+        - recipient: age1ck89m855d05rfv8dn2m6uf7htuqth9rhzw6glnz3k7mhhnfghf6qnkughe
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBTQ2NUK2gxajhuSXJEMVBG
+            aDNzQzVIZ2MvUVdvYlNiNHZTVmNIb2o5TERnCmdSYmVvS1ZrS01FcmdKQkF0QU50
+            Qy9JVDVJcXBGS0E5Q2dZQkNUVUIwQlEKLS0tIFI4NHpaY0htS0o3N0FGTVp6U2x6
+            OWlLT3RhZU1TRzBMYUFLVjNzdEtMZkEKTfCidodF6KJUxF9VLKonTVCC25+w4NNl
+            pJxAlxV5rHApnHuyDixosyfLQjgnof5JdsDsJLD//OqMKW6bHMWv0A==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-01-04T14:42:34Z"
+    mac: ENC[AES256_GCM,data:TtSmxMc9EkI047neel+S3Yogj4172fwlNWavDiF3LiiajcOKkglmj19bXnd8FfqEOmiqi0aaJaeuPklSi4PNj8/pkOA7zNiJztbfaki83IyUCpEt2r9iPPlp/cpsi9nKqbdnEcFzQnpmTxIhxZoJVkgcSAcQldGAbLYIRDSltuU=,iv:+ex+2q+B3/LY4ej5q8S+xJimyZPwNk3Pe7eKSjKYR8Y=,tag:8r9ePhqP1RXwnzXZLxIqvA==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

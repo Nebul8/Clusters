@@ -97,6 +97,16 @@ spec:
         sourcePath: serverfiles/base
         hostPathType: Directory
         readOnly: false
+      - name: serverfilesprivate-base
+        path: /mnt/serverfilesprivate
+        sourcePath: serverfiles/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfilesprivate-dodgeball-base
+        path: /mnt/serverfilesprivate
+        sourcePath: serverfiles/dodgeball/base
+        hostPathType: Directory
+        readOnly: false
       - name: serverfiles-dodgeball-base
         path: /mnt/serverfiles
         sourcePath: serverfiles/dodgeball/base

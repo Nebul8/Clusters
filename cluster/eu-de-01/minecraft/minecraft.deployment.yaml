@@ -23,7 +23,7 @@ spec:
         - name: TYPE
           value: PAPER
         - name: PAPER_BUILD
-          value: "115"
+          value: "91"
         - name: VERSION
           value: 1.21.11
         - name: MEMORY

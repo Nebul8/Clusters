@@ -11,7 +11,7 @@ spec:
   interval: 10m
   targetNamespace: udl
   values:
-    nameOverride: "update-controller-test-two"
+    nameOverride: "update-controller-test-one"
     config:
       podSelector: "update=test-one"
       namespace: "udl"

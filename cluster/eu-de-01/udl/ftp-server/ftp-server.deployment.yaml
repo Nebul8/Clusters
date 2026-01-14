@@ -104,6 +104,10 @@ spec:
           volumeMounts:
             - name: tf2-data
               mountPath: /ftp/tf2
+            - name: test-one
+              mountPath: /ftp/test-one
+            - name: test-two
+              mountPath: /ftp/test-two
             - name: vsftpd-config
               mountPath: /etc/vsftpd/vsftpd.conf
               subPath: vsftpd.conf
@@ -112,10 +116,14 @@ spec:
           hostPath:
             path: /mnt/tf2/tf
             type: DirectoryOrCreate
-        # - name: ftp-tf-test
-        #   hostPath:
-        #     path: /tf/udl-test/tf
-        #     type: DirectoryOrCreate
+        - name: test-one
+          hostPath:
+            path: /mnt/test-one
+            type: DirectoryOrCreate
+        - name: test-two
+          hostPath:
+            path: /mnt/test-two
+            type: DirectoryOrCreate
         - name: vsftpd-config
           configMap:
             name: ftp-vsftpd-config

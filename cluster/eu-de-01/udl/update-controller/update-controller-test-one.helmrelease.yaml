@@ -6,11 +6,12 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: update-controller-test-one
+    name: update-controller
     namespace: default
   interval: 10m
   targetNamespace: udl
   values:
+    nameOverride: "update-controller-test-two"
     config:
       podSelector: "update=test-one"
       namespace: "udl"

@@ -51,8 +51,6 @@ spec:
               mountPath: /ftp
             - name: ftp-credentials-volume
               mountPath: /tmp/secret
-            - name: ftp-tf
-              mountPath: /ftp/tf
       containers:
         - name: ftp
           image: delfer/alpine-ftp-server:latest

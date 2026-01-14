@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftp-server
+  namespace: udl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftp-server
+  template:
+    metadata:
+      labels:
+        app: ftp-server
+    spec:
+      initContainers:
+        - name: init-ftp-users
+          image: busybox:1.36.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              # Prepare a shared /ftp chroot. Read the first non-empty GID from the secret
+              # to use as the shared group for the mount. Then ensure /ftp exists, make it
+              # owned by root:<GID> and setgid so files created by members inherit the group.
+              SHARED_GID=""
+              if [ -f /tmp/secret/users ]; then
+                while IFS= read -r line || [ -n "$line" ]; do
+                  [ -z "$line" ] && continue
+                  NF=$(printf "%s" "$line" | awk -F'|' '{print NF}')
+                  if [ "$NF" -ge 4 ] && [ -z "$SHARED_GID" ]; then
+                    if [ "$NF" -eq 5 ]; then
+                      SHARED_GID=$(printf "%s" "$line" | cut -d'|' -f5)
+                    else
+                      SHARED_GID=$(printf "%s" "$line" | cut -d'|' -f4)
+                    fi
+                  fi
+                done < /tmp/secret/users
+              fi
+              if [ -z "$SHARED_GID" ]; then
+                SHARED_GID=1000
+              fi
+              mkdir -p /ftp
+              # make root-owned chroot, group-writable with setgid so files inherit the group
+              chown root:${SHARED_GID} /ftp || true
+              chmod 2775 /ftp || true
+          volumeMounts:
+            - name: tf2-data
+              mountPath: /ftp
+            - name: ftp-credentials-volume
+              mountPath: /tmp/secret
+            - name: ftp-tf
+              mountPath: /ftp/tf
+      containers:
+        - name: ftp
+          image: delfer/alpine-ftp-server:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: USERS
+              valueFrom:
+                secretKeyRef:
+                  name: ftp-credentials
+                  key: users
+            - name: MIN_PORT
+              value: "30000"
+            - name: MAX_PORT
+              value: "30009"
+            - name: ADDRESS
+              value: "168.119.15.164"
+          ports:
+            - containerPort: 21
+              name: ftp
+              protocol: TCP
+            - containerPort: 30000
+              name: pasv-30000
+              protocol: TCP
+            - containerPort: 30001
+              name: pasv-30001
+              protocol: TCP
+            - containerPort: 30002
+              name: pasv-30002
+              protocol: TCP
+            - containerPort: 30003
+              name: pasv-30003
+              protocol: TCP
+            - containerPort: 30004
+              name: pasv-30004
+              protocol: TCP
+            - containerPort: 30005
+              name: pasv-30005
+              protocol: TCP
+            - containerPort: 30006
+              name: pasv-30006
+              protocol: TCP
+            - containerPort: 30007
+              name: pasv-30007
+              protocol: TCP
+            - containerPort: 30008
+              name: pasv-30008
+              protocol: TCP
+            - containerPort: 30009
+              name: pasv-30009
+              protocol: TCP
+          volumeMounts:
+            - name: tf2-data
+              mountPath: /ftp/tf2
+            - name: vsftpd-config
+              mountPath: /etc/vsftpd/vsftpd.conf
+              subPath: vsftpd.conf
+      volumes:
+        - name: tf2-data
+          hostPath:
+            path: /mnt/tf2/tf
+            type: DirectoryOrCreate
+        # - name: ftp-tf-test
+        #   hostPath:
+        #     path: /tf/udl-test/tf
+        #     type: DirectoryOrCreate
+        - name: vsftpd-config
+          configMap:
+            name: ftp-vsftpd-config
+        - name: ftp-credentials-volume
+          secret:
+            secretName: ftp-credentials

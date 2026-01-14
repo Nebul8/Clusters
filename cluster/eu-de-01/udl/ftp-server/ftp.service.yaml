@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftp
+  namespace: udl
+spec:
+  selector:
+    app: ftp-server
+  type: NodePort
+  ports:
+    - name: ftp
+      protocol: TCP
+      port: 21
+      targetPort: 21
+      # nodePort must be inside your cluster's NodePort range - adjust if needed
+      nodePort: 30221
+    - name: pasv-30000
+      protocol: TCP
+      port: 30000
+      targetPort: 30000
+      nodePort: 30000
+    - name: pasv-30001
+      protocol: TCP
+      port: 30001
+      targetPort: 30001
+      nodePort: 30001
+    - name: pasv-30002
+      protocol: TCP
+      port: 30002
+      targetPort: 30002
+      nodePort: 30002
+    - name: pasv-30003
+      protocol: TCP
+      port: 30003
+      targetPort: 30003
+      nodePort: 30003
+    - name: pasv-30004
+      protocol: TCP
+      port: 30004
+      targetPort: 30004
+      nodePort: 30004
+    - name: pasv-30005
+      protocol: TCP
+      port: 30005
+      targetPort: 30005
+      nodePort: 30005
+    - name: pasv-30006
+      protocol: TCP
+      port: 30006
+      targetPort: 30006
+      nodePort: 30006
+    - name: pasv-30007
+      protocol: TCP
+      port: 30007
+      targetPort: 30007
+      nodePort: 30007
+    - name: pasv-30008
+      protocol: TCP
+      port: 30008
+      targetPort: 30008
+      nodePort: 30008
+    - name: pasv-30009
+      protocol: TCP
+      port: 30009
+      targetPort: 30009
+      nodePort: 30009

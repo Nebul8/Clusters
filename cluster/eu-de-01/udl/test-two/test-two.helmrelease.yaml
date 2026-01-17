@@ -90,7 +90,7 @@ spec:
 
     copyTemplates:
       - targetPath: tf/addons/sourcemod/configs/sourcebans
-        sourcePath: tf/test-two
+        sourcePath: /
         cleanTarget: true
         targetMode: writable
         onlyOnInit: true

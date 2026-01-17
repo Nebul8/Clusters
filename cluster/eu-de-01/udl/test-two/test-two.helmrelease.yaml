@@ -89,9 +89,9 @@ spec:
       - tf/addons/sourcemod/logs
 
     copyTemplates:
-      - targetPath: tf/addons/sourcemod/configs/sourcebans
+      - targetPath: /addons/sourcemod/configs/sourcebans
         sourceMount: /mnt/base
-        sourcePath: custom
+        sourcePath: tf
         cleanTarget: true
         targetMode: writable
         onlyOnInit: true

@@ -69,55 +69,18 @@ spec:
       tty: true
 
     paths:
-      hostSource: /mnt/tf2
+      hostSource: /mnt/test-two
       hostPathType: Directory
       containerTarget: /tf
 
     decompressor:
-      scanBase: false
-      scanOverlays: ["serverfiles-dodgeball-base"]
-      cache:
-        enabled: true
-        type: hostPath
-        mountAsOverlay: true
-        overlayName: decomp-cache
-        hostPath: /mnt/dodgeball-cache
-        hostPathType: DirectoryOrCreate
+      enabled: false
 
     merger:
       watcher:
         enabled: true
         watchParentDepth: 1
         pollIntervalSeconds: 10
-        decompressPaths:
-          - /mnt/serverfiles/serverfiles/dodgeball/base/maps
-
-    overlays:
-      - name: serverfiles-base
-        path: /mnt/serverfiles
-        sourcePath: serverfiles/base
-        hostPathType: Directory
-        readOnly: false
-      - name: serverfilesprivate-base
-        path: /mnt/serverfilesprivate
-        sourcePath: serverfiles/base
-        hostPathType: Directory
-        readOnly: false
-      - name: serverfilesprivate-dodgeball-base
-        path: /mnt/serverfilesprivate
-        sourcePath: serverfiles/dodgeball/base
-        hostPathType: Directory
-        readOnly: false
-      - name: serverfiles-dodgeball-base
-        path: /mnt/serverfiles
-        sourcePath: serverfiles/dodgeball/base
-        hostPathType: Directory
-        readOnly: false
-      - name: serverfiles-dodgeball-test
-        path: /mnt/serverfiles
-        sourcePath: serverfiles/dodgeball/test
-        hostPathType: Directory
-        readOnly: false
 
     writablePaths:
       - tf/logs

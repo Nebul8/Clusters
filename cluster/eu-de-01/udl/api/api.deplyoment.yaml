@@ -46,9 +46,9 @@ spec:
         - name: DEMO_PATH
           value: "/tf/udl/tf/demos"
         - name: ENVIRONMENT
-          value: production
+          value: "production"
         - name: DEBUG
-          value: false
+          value: "false"
         volumeMounts:
         - name: demo-volume
           mountPath: /tf/udl/tf/demos

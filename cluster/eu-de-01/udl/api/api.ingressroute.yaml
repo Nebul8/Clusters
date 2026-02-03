@@ -12,6 +12,6 @@ spec:
       kind: Rule
       services:
         - name: api
-          port: 5823
+          port: 8080
   tls:
     secretName: api-tls

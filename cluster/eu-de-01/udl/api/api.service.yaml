@@ -8,6 +8,6 @@ spec:
     app: api
   ports:
   - protocol: TCP
-    port: 5823
-    targetPort: 5823
+    port: 8080
+    targetPort: 8080
   type: ClusterIP

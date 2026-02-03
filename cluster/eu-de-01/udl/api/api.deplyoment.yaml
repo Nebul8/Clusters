@@ -45,6 +45,10 @@ spec:
           value: "citadel_prod"
         - name: DEMO_PATH
           value: "/tf/udl/tf/demos"
+        - name: ENVIRONMENT
+          value: production
+        - name: DEBUG
+          value: false
         volumeMounts:
         - name: demo-volume
           mountPath: /tf/udl/tf/demos

@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: api
+  namespace: udl
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`api.udl.tf`)
+      kind: Rule
+      services:
+        - name: api
+          port: 5823
+  tls:
+    secretName: api-tls

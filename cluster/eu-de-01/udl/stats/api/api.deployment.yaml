@@ -92,7 +92,7 @@ spec:
       volumes:
         - name: demos
           hostPath:
-            path: /mnt/udl-stats/demos
+            path: /mnt/tf2/tf/demos/udl
             type: DirectoryOrCreate
         - name: outputs
           hostPath:

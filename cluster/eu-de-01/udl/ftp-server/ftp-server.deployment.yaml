@@ -110,6 +110,8 @@ spec:
               mountPath: /ftp/test-two
             - name: udl-template
               mountPath: /ftp/udl-template
+            - name: udl-stats
+              mountPath: /ftp/udl-stats
             - name: vsftpd-config
               mountPath: /etc/vsftpd/vsftpd.conf
               subPath: vsftpd.conf
@@ -129,6 +131,10 @@ spec:
         - name: udl-template
           hostPath:
             path: /tf/udl
+            type: DirectoryOrCreate
+        - name: udl-stats
+          hostPath:
+            path: /mnt/udl-stats
             type: DirectoryOrCreate
         - name: vsftpd-config
           configMap:

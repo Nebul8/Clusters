@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: udl-stats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: webapp
+          image: ghcr.io/udl-tf/udlstats-webapp:main # Update with actual image
+          env:
+            - name: ANALYSER_API_URL
+              value: "http://api.udl-stats.svc.cluster.local:8765"
+            - name: ANALYSER_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: webapp-secrets
+                  key: ANALYSER_API_SECRET
+            - name: REDIS_URL
+              value: "redis://redis.udl-stats.svc.cluster.local:6379"
+            - name: STEAM_WEB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: webapp-secrets
+                  key: STEAM_WEB_API_KEY
+          envFrom:
+            - secretRef:
+                name: webapp-env
+                optional: true
+          ports:
+            - containerPort: 3000
+              name: http
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"

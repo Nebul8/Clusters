@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: udl-stats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/udl-tf/udlstats-api:main # Update with actual image
+          command: ["--host", "0.0.0.0"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: DATABASE_URL
+                  optional: true
+            - name: REDIS_URL
+              value: "redis://redis.udl-stats.svc.cluster.local:6379"
+            - name: TFDB_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TFDB_API_SECRET
+            - name: TFDB_API_SECRETS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TFDB_API_SECRETS
+                  optional: true
+            - name: TFDB_WATCH_DIR
+              value: "/demos"
+            - name: TFDB_OUTPUT_ROOT
+              value: "/outputs"
+            - name: TFDB_INGEST_ROOT
+              value: "/outputs"
+            - name: TFDB_PARSER_BIN
+              value: "/usr/local/bin/parse_demo"
+            - name: TFDB_MAX_BODY_BYTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TFDB_MAX_BODY_BYTES
+                  optional: true
+            - name: TFDB_LOG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TFDB_LOG_SECRET
+                  optional: true
+            - name: TFDB_UDP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TFDB_UDP_PORT
+                  optional: true
+            - name: TFDB_LOG_DEBUG
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TFDB_LOG_DEBUG
+                  optional: true
+          ports:
+            - containerPort: 8765
+              name: api
+            - containerPort: 8766
+              name: api-alt
+            - containerPort: 27100
+              protocol: UDP
+              name: udp
+          volumeMounts:
+            - name: demos
+              mountPath: /demos
+            - name: outputs
+              mountPath: /outputs
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+      volumes:
+        - name: demos
+          hostPath:
+            path: /mnt/udl-stats/demos
+            type: DirectoryOrCreate
+        - name: outputs
+          hostPath:
+            path: /mnt/udl-stats/outputs
+            type: DirectoryOrCreate

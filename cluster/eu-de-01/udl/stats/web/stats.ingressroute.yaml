@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: stats-ingress
+  namespace: udl-stats
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`stats.udl.tf`)
+      kind: Rule
+      services:
+        - name: webapp
+          port: 3000
+  tls:
+    secretName: stats-tls

@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: udlstats-api
+  namespace: flux-system
+spec:
+  image: ghcr.io/udl-tf/udlstats-api
+  interval: 1m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: udlstats-api-latest
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: udlstats-api
+  filterTags:
+    pattern: '^build-(?P<build_number>\d+)$'
+    extract: '$build_number'
+  policy:
+    numerical:
+      order: asc

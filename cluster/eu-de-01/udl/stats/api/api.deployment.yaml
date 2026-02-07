@@ -16,7 +16,7 @@ spec:
       containers:
         - name: api
           image: ghcr.io/udl-tf/udlstats-api:main # Update with actual image
-          # command: ["--host", "0.0.0.0"]
+          command: ["python", "app.py", "--host", "0.0.0.0"]
           env:
             - name: DATABASE_URL
               valueFrom:

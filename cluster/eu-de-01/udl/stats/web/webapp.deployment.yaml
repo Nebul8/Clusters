@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: webapp
-          image: ghcr.io/udl-tf/udlstats-webapp:build-35 # {"$imagepolicy": "flux-system:udlstats-webapp-latest"}
+          image: ghcr.io/udl-tf/udlstats-webapp:build-36 # {"$imagepolicy": "flux-system:udlstats-webapp-latest"}
           env:
             - name: ANALYSER_API_URL
               value: "http://api.udl-stats.svc.cluster.local:8765"

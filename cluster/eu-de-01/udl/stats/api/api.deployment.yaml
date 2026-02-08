@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/udl-tf/udlstats-api:build-53 # {"$imagepolicy": "flux-system:udlstats-api-latest"}
+          image: ghcr.io/udl-tf/udlstats-api:build-54 # {"$imagepolicy": "flux-system:udlstats-api-latest"}
           command: ["python", "app.py", "--host", "0.0.0.0"]
           env:
             - name: DATABASE_URL

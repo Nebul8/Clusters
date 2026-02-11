@@ -214,6 +214,17 @@ All automation lives in [Taskfile.yaml](Taskfile.yaml).
 - `task secrets:clean [FILE=<path>]` – remove generated plaintext secrets
 - `task secrets:rotate [FILE=<path>]` – run `sops updatekeys -y` to refresh recipients
 
+When the sealing scripts run, they walk up from the target secret path to find the nearest `.kube-seal.yaml` (falling back to the repo root) and use any `controller`, `namespace`, or `context` fields they find. Keep one of these files inside each cluster directory to scope settings without touching your shell environment:
+
+```yaml
+# cluster/eu-de-01/.kube-seal.yaml
+controller: sealed-secrets-controller
+namespace: kube-system
+context: eu-de-01
+```
+
+If a field is omitted in the YAML, the CLI defaults still apply (`sealed-secrets`, `kube-system`, empty context), and you can always override on the command line with `KUBE_*` env vars when invoking the `task`.
+
 You can scope any of the `secrets:*` tasks to a single resource by supplying `FILE=cluster/eu-de-01/udl/advanced-one/something.secret.yaml` (or the `.sops/.sealed` variants). Without `FILE`, the commands walk the repo and operate on every `.sops.yaml` they find.
 
 To touch everything in one shot:

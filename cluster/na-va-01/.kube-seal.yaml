@@ -1,0 +1,3 @@
+controller: sealed-secrets-controller
+namespace: flux-system
+context: na-va-01

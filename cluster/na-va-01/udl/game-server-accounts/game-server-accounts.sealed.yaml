@@ -1,0 +1,16 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: game-server-accounts
+  namespace: udl
+spec:
+  encryptedData:
+    UDL_NA_ADVANCED_ONE: AgALdvdopW2tJxzvxu6HacYubOZjlig4/Xy+xvP1FT7P5QdzALBeVuDTza6zoOvAmDgKQ34zcbdQQwTsewzBNqe9JdKIZIk371ddF9lUFQNRAZr1d6AVj3YY2+UOz2aqfSI7crEXUFo+hYgUfZMuEnhLj7U9ryrRFUOrAEBXJO7Xq7WP73c1vGW0cPV45ku60KwaTP/OnICARuC6epTlHRk6Pb6H8tGWDomK3zyuhM+cF8O2lUvQ2lV0UrxS4Hb9A33O6kZsdu5Ifsh6+SeGBvycfSEQS/M1fosb29SxT/BNdKDmiVcXtFa3ir7Sy2zOrv88lb0yyZ6kCs+1uZUTpeTDYrre1uCBtQq2ToGEosoAEokbjWW/MPzS9SDosmvQeg/kYeesrASr0Ab+/bcSasMMtfww1A+sAxLbKZvJItMNNEEwe27udXjHFJfJ3VvLX4YI3yL+5GUrS4f0Zcsm2gB2mJjQooJEWMnaFaPVkG3/irM9T7SPXYQyPkeRyT8mg7h6UKaSgiXhPNNT4PzjILhN5tu6sX8xboEApyvFhugVAX3QdYf57qwqmNUMQVsL58ZRFnKrh4v6xlHKE00tf0NhU8tbOSOqmj4IECxMpH45tsAMORvXb6nOaTpMMXvxfCsQi5gpuNR3RFSUzydWUm6UQIjpNTQnLVJXflsy7vyk+ieCikoGzsKQ6i4Amy3hXhu6GDEjXI+1vVKJH0IbUT5rz/mCs50CgNjPiSrX/TUF3A==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: game-server-accounts
+      namespace: udl
+    type: Opaque

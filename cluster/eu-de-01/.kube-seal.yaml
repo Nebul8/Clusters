@@ -1,0 +1,3 @@
+controller: sealed-secrets-controller
+namespace: kube-system
+context: eu-de-01

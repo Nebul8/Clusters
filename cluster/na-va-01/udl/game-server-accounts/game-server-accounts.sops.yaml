@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: game-server-accounts
+    namespace: udl
+stringData:
+    UDL_NA_ADVANCED_ONE: ENC[AES256_GCM,data:/xrrHRQKNqDE6Uy87eDQxdpo9Tz632YrqY2BTr/IVLM=,iv:QVVKq7dfSe2+kqQIL5vp8z1l91BztDLGUHVdJRDB02M=,tag:uVuaPJwcB+aztwalao25bA==,type:str]
+sops:
+    age:
+        - recipient: age1ck89m855d05rfv8dn2m6uf7htuqth9rhzw6glnz3k7mhhnfghf6qnkughe
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB6WWVIQSthcUtSdkt6R2Zh
+            d3FuZlZ0MU5PUThLQ1VDKzAwc1VlYk9Mc0FRClpEclBLM0xmYUV3bU51R2RucnBL
+            ZG41ZkQ2ZDRVWnBXV09EeGdGTzFrWjAKLS0tIEJPRC96bmtKZXJuQUQ2RmhFaWFM
+            NkxEV1BTTUhSVWM5Si9MU2t6Z0RneDQKlhC499wnNXUT9Ni7YnUbfnFwMzqzDMqw
+            4xcipFMd+CP54Dy+jFBmeZoFudMjgfmPiuCwTuvZDG36LG27SWl76w==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-02-11T22:44:35Z"
+    mac: ENC[AES256_GCM,data:t0yIouzZE0rInAaVGwuCrC9ppbQcmDVn/9G5ivd76B4sxjGOIwqP3YiCdwPe4MDRBVo1/JECPj4vX9wNLVElhyEo5kiT0TlHwXMCqPTwhFclLtnreUAuu2OdZnZnSpiCh2JkC+i0Y58PLFOuhvdc5uNWxFU5/HZHweGfGzEBPwc=,iv:CJu16iWb9pgwIpgpYveOdWcn1wp1fhbP6Zo9cxIvg2E=,tag:y/Unolcb2eck6qHEGj/8SA==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

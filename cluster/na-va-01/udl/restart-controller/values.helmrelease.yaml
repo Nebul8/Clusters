@@ -1,0 +1,16 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: restart-controller
+  namespace: udl
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: restart-controller
+    namespace: default
+  interval: 10m
+  values:
+    controller:
+      podSelector: "restart=udl-servers"
+      cronExpression: "0 4 * * *"
+      namespace: "udl"

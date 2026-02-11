@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: restart-controller
+  namespace: default
+spec:
+  interval: 5m0s
+  url: oci://ghcr.io/udl-tf/charts/restart-controller
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy
+  ref:
+    semver: "^0.1.0"

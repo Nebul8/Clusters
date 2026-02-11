@@ -1,0 +1,16 @@
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: ClusterGenerator
+metadata:
+  name: github-token-global
+spec:
+  kind: GithubAccessToken
+  generator:
+    githubAccessTokenSpec:
+      appID: "2527947"
+      installID: "100973721"
+      url: https://api.github.com
+      auth:
+        privateKey:
+          secretRef:
+            name: github-app-creds
+            key: privateKey

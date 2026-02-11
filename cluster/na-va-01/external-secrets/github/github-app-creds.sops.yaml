@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: github-app-creds
+    namespace: udl
+    annotations:
+        replicator.v1.mittwald.de/replicate-to: udl,flux-system
+type: Opaque
+stringData:
+    privateKey: ENC[AES256_GCM,data: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,iv:BpRQDaGXgQ7bDQDb+FYlyvljV/zd4V0RbDcLlO2lidw=,tag:7DnAXwXrDgFv/leXOx2zTw==,type:str]
+sops:
+    age:
+        - recipient: age1ck89m855d05rfv8dn2m6uf7htuqth9rhzw6glnz3k7mhhnfghf6qnkughe
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBhb0JWOWNXWEg3WWRJdTVU
+            dTluUkwybU9FaWpYOWs2VkQvRkVmbStRQ1YwClJvbnJNVXdJcVhGUjRjUGdhaEFV
+            UWFQZ0haREZaam9zWE05dEFIK3lWU2MKLS0tIFBMcFN3M2MxQklJNVh6cVU2Q3BS
+            Q0daM1YvUDVzYzBuS1c2TWRTV0NDVEkKLGIu33NWHdpQYIgT4LxgtJHDXzQimlge
+            u9Y2MjQMCOIdHgWDamWH15qTH5fhS98BtFLPfQH7Oc4nQy26Y/pBFg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-02-11T22:53:54Z"
+    mac: ENC[AES256_GCM,data:YivgD8mZ6XHBvyvFXg+xxHM8RqPArJIa5QsBzcCecPTyONTfMZcvfWJb1GtReipQxzInY9JUN6k9kgILLCDopacmJ8c4ydHOKfiT/lJQfWO/6LxNsZEvIsS3RvbebOL8VIvm9dGI0t4gvAG4l3IApCVaL8v0LvEdSfilLjOYRGw=,iv:haOdwjUuIofXglL+0Cz6aN/yixWKr7MmR5/nCWPnPdA=,tag:1NaPE4NrhGTx6r7j5nE2hw==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0

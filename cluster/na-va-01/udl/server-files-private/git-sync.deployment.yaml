@@ -27,6 +27,7 @@ spec:
             - --root=/mnt
             - --dest=serverfiles
             - --period=60s
+            - --sync-timeout=5m
             - --max-failures=0
           volumeMounts:
             - name: serverfiles

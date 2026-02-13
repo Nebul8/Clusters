@@ -22,6 +22,8 @@ spec:
           image: registry.k8s.io/git-sync/git-sync:v4.5.1
           args:
             - --repo=https://github.com/UDL-TF/ServerFiles
+            - --username=x-access-token
+            - --password-file=/etc/github-token/password
             - --root=/mnt
             - --dest=serverfiles
             - --period=60s
@@ -30,6 +32,9 @@ spec:
           volumeMounts:
             - name: serverfiles
               mountPath: /mnt
+            - name: github-token
+              mountPath: /etc/github-token
+              readOnly: true
           resources:
             requests:
               memory: "64Mi"
@@ -42,3 +47,6 @@ spec:
           hostPath:
             path: /mnt/serverfiles
             type: DirectoryOrCreate
+        - name: github-token
+          secret:
+            secretName: github-token

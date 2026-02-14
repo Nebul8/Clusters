@@ -51,7 +51,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: rcon-password
-              key: RCON_PASSWORD_SCRIM_TONY-76561198123577596
+              key: RCON_PASSWORD_SCRIM_TONY_76561198123577596
         - name: SRCDS_STARTMAP
           value: tfdb_octagon_udl_v4
         - name: SRCDS_STATIC_HOSTNAME

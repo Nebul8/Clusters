@@ -1,7 +1,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: tony_76561198123577596
+  name: tony-76561198123577596
   namespace: udl
 spec:
   chartRef:
@@ -13,12 +13,12 @@ spec:
   values:
     workload:
       kind: Deployment
-      nameOverride: "tony_76561198123577596"
+      nameOverride: "tony-76561198123577596"
       deploymentStrategy:
         type: Recreate
 
     app:
-      name: tony_76561198123577596
+      name: tony-76561198123577596
       image:
         repository: ghcr.io/udl-tf/tf2-image
         tag: latest
@@ -51,7 +51,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: rcon-password
-              key: RCON_PASSWORD_SCRIM_TONY_76561198123577596
+              key: RCON_PASSWORD_SCRIM_TONY-76561198123577596
         - name: SRCDS_STARTMAP
           value: tfdb_octagon_udl_v4
         - name: SRCDS_STATIC_HOSTNAME
@@ -60,14 +60,14 @@ spec:
           valueFrom:
             secretKeyRef:
               name: game-server-accounts
-              key: TONY_76561198123577596
+              key: TONY-76561198123577596
         - name: SRCDS_TICKRATE
           value: "128"
         - name: SRCDS_PW
           valueFrom:
             secretKeyRef:
               name: server-passwords
-              key: TONY_76561198123577596
+              key: TONY-76561198123577596
       command: []
       args: []
       stdin: true
@@ -120,7 +120,7 @@ spec:
         readOnly: false
       - name: serverfiles-dodgeball-advanced
         path: /mnt/serverfiles
-        sourcePath: serverfiles/dodgeball/tony_76561198123577596
+        sourcePath: serverfiles/dodgeball/tony-76561198123577596
         hostPathType: Directory
         readOnly: false
 

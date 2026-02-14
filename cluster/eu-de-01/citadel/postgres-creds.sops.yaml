@@ -4,8 +4,6 @@ metadata:
     name: postgres-creds
     namespace: citadel
     annotations:
-        sealedsecrets.bitnami.com/controller-name: sealed-secrets-controller
-        sealedsecrets.bitnami.com/controller-namespace: kube-system
         replicator.v1.mittwald.de/replicate-to: udl
 type: Opaque
 stringData:

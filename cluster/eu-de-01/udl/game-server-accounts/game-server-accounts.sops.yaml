@@ -4,9 +4,7 @@ type: Opaque
 metadata:
     name: game-server-accounts
     namespace: udl
-    annotations:
-        sealedsecrets.bitnami.com/controller-name: sealed-secrets-controller
-        sealedsecrets.bitnami.com/controller-namespace: kube-system
+
 stringData:
     UDL_NORMAL_ONE: ENC[AES256_GCM,data:u59r+SRUqhe8IVMeQVo3AbWs9jFJlHmndx4e98wNy68=,iv:iaCHORgrh/7eWXse2z8Dd5mN0wD+Qx8WXwTW+M4L7VA=,tag:FeBRj1+Ri+JHHGe/m+6LPg==,type:str]
     UDL_ADVANCED_ONE: ENC[AES256_GCM,data:35cuthklNl/O/O0LZEYmdHJZ2V10GbOptMuCyjHZV5A=,iv:tq9J4M9gQlSRalxMOS3fddpTSDtc/fA4i0U7vWWzjg8=,tag:++BHup0ZEUmd3CQJeWnYZA==,type:str]

@@ -60,14 +60,14 @@ spec:
           valueFrom:
             secretKeyRef:
               name: game-server-accounts
-              key: TONY-76561198123577596
+              key: TONY_76561198123577596
         - name: SRCDS_TICKRATE
           value: "128"
         - name: SRCDS_PW
           valueFrom:
             secretKeyRef:
               name: server-passwords
-              key: TONY-76561198123577596
+              key: TONY_76561198123577596
       command: []
       args: []
       stdin: true

@@ -1,0 +1,158 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tony_76561198123577596
+  namespace: udl
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: tf2chart
+    namespace: default
+  interval: 1m
+  targetNamespace: udl
+  values:
+    workload:
+      kind: Deployment
+      nameOverride: "tony_76561198123577596"
+      deploymentStrategy:
+        type: Recreate
+
+    app:
+      name: tony_76561198123577596
+      image:
+        repository: ghcr.io/udl-tf/tf2-image
+        tag: latest
+        pullPolicy: IfNotPresent
+      ports:
+        - name: game-udp
+          containerPort: 27060
+          protocol: UDP
+        - name: sourcetv-udp
+          containerPort: 27165
+          protocol: UDP
+        - name: client-udp
+          containerPort: 37050
+          protocol: UDP
+        - name: steam-udp
+          containerPort: 26945
+          protocol: UDP
+      env:
+        - name: SRCDS_PORT
+          value: "27060"
+        - name: SRCDS_TV_PORT
+          value: "27165"
+        - name: SRCDS_CLIENT_PORT
+          value: "37050"
+        - name: SRCDS_STEAM_PORT
+          value: "26945"
+        - name: SRCDS_MAXPLAYERS
+          value: "12"
+        - name: SRCDS_RCONPW
+          valueFrom:
+            secretKeyRef:
+              name: rcon-password
+              key: RCON_PASSWORD_SCRIM_TONY_76561198123577596
+        - name: SRCDS_STARTMAP
+          value: tfdb_octagon_udl_v4
+        - name: SRCDS_STATIC_HOSTNAME
+          value: "DMB Scrims"
+        - name: SRCDS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: game-server-accounts
+              key: TONY_76561198123577596
+        - name: SRCDS_TICKRATE
+          value: "128"
+        - name: SRCDS_PW
+          valueFrom:
+            secretKeyRef:
+              name: server-passwords
+              key: TONY_76561198123577596
+      command: []
+      args: []
+      stdin: true
+      tty: true
+
+    paths:
+      hostSource: /mnt/tf2
+      hostPathType: Directory
+      containerTarget: /tf
+
+    decompressor:
+      scanBase: false
+      scanOverlays: ["serverfiles-dodgeball-base"]
+      cache:
+        enabled: true
+        type: hostPath
+        mountAsOverlay: true
+        overlayName: decomp-cache
+        hostPath: /mnt/dodgeball-cache
+        hostPathType: DirectoryOrCreate
+
+    merger:
+      watcher:
+        enabled: true
+        watchParentDepth: 1
+        pollIntervalSeconds: 10
+        decompressPaths:
+          - /mnt/serverfiles/serverfiles/dodgeball/base/maps
+
+    overlays:
+      - name: serverfiles-base
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfilesprivate-base
+        path: /mnt/serverfilesprivate
+        sourcePath: serverfiles/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfilesprivate-dodgeball-base
+        path: /mnt/serverfilesprivate
+        sourcePath: serverfiles/dodgeball/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfiles-dodgeball-base
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/dodgeball/base
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfiles-dodgeball-advanced
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/dodgeball/tony_76561198123577596
+        hostPathType: Directory
+        readOnly: false
+
+    writablePaths:
+      - tf/logs
+      - tf/demos
+      - tf/addons/sourcemod/data
+      - tf/addons/sourcemod/logs
+
+    copyTemplates:
+      - targetPath: tf/addons/sourcemod/configs/sourcebans
+        overlay: serverfiles-base
+        sourcePath: serverfiles/base/addons/sourcemod/configs/sourcebans
+        cleanTarget: false
+        targetMode: writable
+        onlyOnInit: true
+
+    permissionsInit:
+      applyDuringMerge: true
+      applyPaths:
+        - /tf
+      user: 1000
+      group: 1000
+      chmod: "775"
+
+    hostNetwork: true
+    dnsPolicy: ""
+    serviceAccountName: ""
+
+    service:
+      enabled: false
+
+    podLabels:
+      update: udl
+      restart: udl-servers

@@ -132,7 +132,7 @@ spec:
 
     copyTemplates:
       - targetPath: tf/addons/sourcemod/configs/sourcebans
-        overlay: serverfiles-base
+        overlay: serverfiles-base-sourcebans
         sourcePath: serverfiles/base/addons/sourcemod/configs/sourcebans
         cleanTarget: false
         targetMode: writable

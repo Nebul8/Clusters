@@ -100,9 +100,14 @@ spec:
           - /mnt/serverfiles/serverfiles/dodgeball/base/maps
 
     overlays:
-      - name: serverfiles-base
+      - name: serverfiles-base-sourcemod
         path: /mnt/serverfiles
-        sourcePath: serverfiles/base
+        sourcePath: serverfiles/base/sourcemod
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfiles-base-sourcebans
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/base/sourcebans
         hostPathType: Directory
         readOnly: false
       - name: serverfilesprivate-base

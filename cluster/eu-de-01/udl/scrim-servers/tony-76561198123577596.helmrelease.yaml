@@ -68,6 +68,10 @@ spec:
             secretKeyRef:
               name: server-passwords
               key: TONY_76561198123577596
+        - name: SCRIM_OWNERS
+          value: "76561198123577596"
+        - name: SERVER_ID
+          value: "DMBScrims"
       command: []
       args: []
       stdin: true
@@ -98,9 +102,9 @@ spec:
           - /mnt/serverfiles/serverfiles/dodgeball/base/maps
 
     overlays:
-      - name: serverfiles-base
+      - name: serverfiles-base-sourcemod
         path: /mnt/serverfiles
-        sourcePath: serverfiles/base
+        sourcePath: serverfiles/base/sourcemod
         hostPathType: Directory
         readOnly: false
       - name: serverfilesprivate-base
@@ -121,6 +125,11 @@ spec:
       - name: serverfiles-dodgeball-advanced
         path: /mnt/serverfiles
         sourcePath: serverfiles/dodgeball/tony-76561198123577596
+        hostPathType: Directory
+        readOnly: false
+      - name: serverfiles-dodgeball-scrim
+        path: /mnt/serverfiles
+        sourcePath: serverfiles/dodgeball/scrim
         hostPathType: Directory
         readOnly: false
 

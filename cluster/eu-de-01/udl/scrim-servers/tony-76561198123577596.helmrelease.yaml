@@ -69,7 +69,7 @@ spec:
               name: server-passwords
               key: TONY_76561198123577596
         - name: SCRIM_OWNERS
-          value: "76561198123577596"
+          value: "76561198123577596,76561199068020903,76561199063223838,76561198128593303,76561198128279264,76561198844601455"
         - name: SERVER_ID
           value: "DMBScrims"
       command: []

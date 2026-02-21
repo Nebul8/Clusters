@@ -11,6 +11,11 @@ spec:
   interval: 10m
   targetNamespace: udl
   values:
+    image:
+      repository: ghcr.io/udl-tf/tourney-controller
+      tag: "latest"
+      pullPolicy: Always
+
     nameOverride: "tourney-controller"
     fullnameOverride: "tourney-controller"
 

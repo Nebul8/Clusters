@@ -55,7 +55,7 @@ spec:
         - name: SRCDS_STARTMAP
           value: tfdb_octagon_udl_v4
         - name: SRCDS_STATIC_HOSTNAME
-          value: "UDL.TF | EU | Normal Server #1"
+          value: "UDL.TF | EU | Casual Server #1"
         - name: SRCDS_TOKEN
           valueFrom:
             secretKeyRef:

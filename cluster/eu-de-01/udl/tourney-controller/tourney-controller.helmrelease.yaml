@@ -25,7 +25,7 @@ spec:
     controllerConfig:
       namespace: "udl"
       pollInterval: 30s
-      chartPath: oci://ghcr.io/udl-tf/charts/tf2chart
+      chartPath: oci://ghcr.io/udl-tf/charts/tf2chart:0.3.0
       matchStatuses:
         - 0
       divisionFilters:

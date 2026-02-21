@@ -35,6 +35,7 @@ spec:
       notificationsLinkFormat: /matches/%d
 
     database:
+      name: citadel_prod
       host: postgres.citadel.svc.cluster.local
       passwordKey: DB_PASSWORD
       existingSecret:

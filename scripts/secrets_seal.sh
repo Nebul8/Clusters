@@ -125,13 +125,24 @@ fi
 AGE_KEY=$(ssh-to-age -private-key -i "$SSH_KEY")
 common_kubeseal_args=("--format=yaml")
 
+updated=0
 for file in "${files[@]}"; do
   secret="${file%.sops.yaml}.secret.yaml"
   sealed="${file%.sops.yaml}.sealed.yaml"
 
-  if [ ! -f "$secret" ]; then
-    echo "Missing $secret, decrypting from $file"
+  if [ ! -f "$secret" ] || [ "$file" -nt "$secret" ]; then
+    echo "Refreshing plaintext $secret from $file"
     SOPS_AGE_KEY="$AGE_KEY" sops -d "$file" > "$secret"
+  fi
+
+  if [ ! -s "$secret" ]; then
+    echo "Skipping $secret (plaintext is empty)"
+    continue
+  fi
+
+  if [ -f "$sealed" ] && [ "$sealed" -nt "$file" ] && [ "$sealed" -nt "$secret" ]; then
+    echo "Skipping $sealed (already up to date)"
+    continue
   fi
 
   effective_controller="$CONTROLLER"
@@ -175,6 +186,11 @@ for file in "${files[@]}"; do
   fi
   kubeseal_args+=("${common_kubeseal_args[@]}")
 
+  updated=1
   echo "Sealing $secret -> $sealed (controller ns: $effective_namespace)"
   kubeseal "${kubeseal_args[@]}" < "$secret" > "$sealed"
 done
+
+if [ $updated -eq 0 ]; then
+  echo "No secrets required resealing."
+fi

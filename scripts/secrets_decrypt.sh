@@ -39,6 +39,13 @@ AGE_KEY=$(ssh-to-age -private-key -i "$SSH_KEY")
 
 for file in "${files[@]}"; do
   secret="${file%.sops.yaml}.secret.yaml"
+  tmp_secret="$(mktemp "${secret}.XXXXXX")"
   echo "Decrypting $file -> $secret"
-  SOPS_AGE_KEY="$AGE_KEY" sops -d "$file" > "$secret"
+  if SOPS_AGE_KEY="$AGE_KEY" sops -d "$file" > "$tmp_secret"; then
+    mv "$tmp_secret" "$secret"
+  else
+    echo "Failed to decrypt $file, leaving existing $secret untouched" >&2
+    rm -f "$tmp_secret"
+    exit 1
+  fi
 done

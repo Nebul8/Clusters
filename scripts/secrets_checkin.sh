@@ -46,6 +46,11 @@ for secret in "${files[@]}"; do
     continue
   fi
 
+  if [ ! -s "$secret" ]; then
+    echo "Skipping $secret (plaintext is empty)"
+    continue
+  fi
+
   tmp="$(mktemp "${sops_file}.XXXXXX")"
   cp "$secret" "$tmp"
   echo "Encrypting $secret -> $sops_file"

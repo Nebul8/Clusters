@@ -1,0 +1,67 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tourney-controller
+  namespace: udl
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: tourney-controller
+    namespace: default
+  interval: 10m
+  targetNamespace: udl
+  values:
+    nameOverride: "tourney-controller"
+    fullnameOverride: "tourney-controller"
+
+    serviceAccount:
+      create: true
+
+    controllerConfig:
+      namespace: "udl"
+      pollInterval: 30s
+      chartPath: oci://ghcr.io/udl-tf/charts/tf2chart
+      matchStatuses:
+        - 0
+      divisionFilters:
+        - "EU"
+      defaultMap: tfdb_octagon_udl_v4
+      notificationsEnabled: true
+      notificationsLinkFormat: /matches/%d
+
+    database:
+      host: postgres.citadel.svc.cluster.local
+      passwordKey: DB_PASSWORD
+      existingSecret:
+        name: postgres-creds  
+        key: POSTGRES_PASSWORD
+        userKey: POSTGRES_USER
+
+    ports:
+      game: "30000-30299"
+      sourcetv: "30300-30599"
+      client: "40000-40299"
+      steam: "29000-29299"
+
+    srcds:
+      tickRate: 128
+      maxPlayersOverride: 0
+      staticToken: ""
+      staticTokenSecret:
+        name: ""
+        key: ""
+      passwordLength: 10
+      rconLength: 46
+
+    steam:
+      apiKeySecret:
+        # Use existing secret for Steam API key instead of plain text
+        name: ""
+        key: "api-key"
+      appId: 440  # TF2 App ID
+      autoTokens: true
+      tokenCleanup: true
+      tokenMemoTemplate: "UDL Match %d Round %d"
+
+    tf2Chart:
+      values: {}
